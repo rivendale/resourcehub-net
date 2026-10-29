@@ -18,6 +18,7 @@ them. Truth is the review gate's job, not the build's.
 import argparse
 import datetime
 import email.utils
+import glob
 import html
 import json
 import os
@@ -51,7 +52,7 @@ FORBIDDEN = re.compile("[\x00-\x1f\x7f\ufffe\uffff\ud800-\udfff]")
 # with no whitespace or backslash. Anything else (credentials, a percent-encoded or missing host, a
 # backslash a browser would rewrite) is refused rather than parsed charitably.
 LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
-URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::(?P<port>\d{{1,5}}))?(?P<rest>[/?#][^\s\\\"'<>]*)?$")
+URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::(?P<port>[0-9]{{1,5}}))?(?P<rest>[/?#][^\s\\\"'<>]*)?$")
 URL_IN_TEXT = re.compile(r"[a-z][a-z0-9+.-]*://[^\s<>\"']+", re.I)   # only scheme:// is a URL; "BERT: ..." is not
 TRAILING = ".,;:!?)]}"
 _writes = 0
@@ -166,8 +167,11 @@ def url_problems(s, path):
     if host.endswith("substack.com") and "/redirect/" in u.path:
         errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
     frag = u.fragment
-    keys = [k for part in (u.query, frag, frag.split("?", 1)[1] if "?" in frag else "")   # #/route?token= too
-            for k, _ in urllib.parse.parse_qsl(part, keep_blank_values=True)]
+    # key=value segments only (a bare #anchor is not a key), split on & and ; (both are separators),
+    # in the query, the fragment, and the query inside a hash route (#/route?token=).
+    keys = [urllib.parse.unquote_plus(seg.split("=", 1)[0])
+            for part in (u.query, frag, frag.split("?", 1)[1] if "?" in frag else "")
+            for seg in re.split(r"[&;]", part) if "=" in seg]
     for k in keys:
         kl = k.lower()
         words = set(re.split(r"[^a-z0-9]+", kl))
@@ -181,8 +185,10 @@ def link_problems(entry, where):
     """Every URL in every string, whole-field or inside prose, meets the same rules."""
     errs = []
     for path, text in strings(entry, where):
-        if re.match(r"^[a-z][a-z0-9+.-]*://\S*$", text, re.I):
-            errs += url_problems(text, path)   # a URL field (no whitespace) is checked whole, never a prefix of it
+        if re.match(r"^[a-z][a-z0-9+.-]*://[^ ]*$", text, re.I):
+            # A URL field (no ASCII space) is checked whole, never a prefix of it; URL_RE then refuses any
+            # other whitespace, so a non-breaking space cannot hide the rest of the URL.
+            errs += url_problems(text, path)
             continue
         for m in URL_IN_TEXT.finditer(text):
             url = m.group(0)
@@ -413,14 +419,22 @@ def main():
     ap.add_argument("--schemas", default=os.path.join(ROOT, "schemas"))
     ap.add_argument("--out", default=os.path.join(ROOT, "site"))
     a = ap.parse_args()
+    out = os.path.abspath(a.out)
+    parent = os.path.dirname(out)
+    # First, before anything can fail: a build killed between the two renames left the previous site
+    # aside in .site-old-*/site. Put it back, so no later failure can leave the output missing.
+    if not os.path.exists(out):
+        stranded = sorted(glob.glob(os.path.join(parent, ".site-old-*", "site", MARKER)))
+        if stranded:
+            os.rename(os.path.dirname(stranded[-1]), out)
+            shutil.rmtree(os.path.dirname(os.path.dirname(stranded[-1])), ignore_errors=True)
+            print(f"build.py: restored the previous site from an interrupted build into {out}", file=sys.stderr)
     if not os.path.isdir(a.entries):
         die(f"entries directory {a.entries} does not exist; refusing to publish an empty site over the real one")
     schemas = load_schemas(a.schemas)
     entries = load_entries(a.entries, schemas)
-    out = os.path.abspath(a.out)
     if os.path.exists(out) and not os.path.isfile(os.path.join(out, MARKER)):
         die(f"refusing to replace {out}: it is not a previous build (no {MARKER})")
-    parent = os.path.dirname(out)
     os.makedirs(parent, exist_ok=True)
     tmp = tempfile.mkdtemp(prefix=".site-", dir=parent)
     os.chmod(tmp, 0o755)   # mkdtemp makes it 0700

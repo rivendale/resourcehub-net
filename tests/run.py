@@ -173,6 +173,12 @@ for key in ("api_key", "password", "auth_token", "session", "client_secret"):
 p, _ = build(write_tree(mutate("papers", link="https://example.com/p?author=x&keyword=y&page=2#section-3")))
 check("innocent-keys-ok", p.returncode == 0, p.stderr.strip()[:200])   # whole words: author/keyword are not credentials
 expect_fail("hash-route-token", mutate("papers", link="https://app.example.com/#/reset?token=abc"), "token")
+expect_fail("nbsp-in-url-field", mutate("papers", link="https://example.com/p\u00a0?token=abc"), "link")
+expect_fail("semicolon-token", mutate("papers", link="https://example.com/?x=1;token=private"), "token")
+expect_fail("fullwidth-port", mutate("papers", link="https://example.com:\uff14\uff14\uff13/p"), "link")
+p, _ = build(write_tree(mutate("papers", link="https://docs.python.org/3/library/hashlib.html#key-derivation",
+                                 sources=["https://example.com/guide#auth", "https://example.com/rfc#session-management"])))
+check("anchors-ok", p.returncode == 0, p.stderr.strip()[:200])   # an anchor is not a key=value pair
 expect_fail("hash-route-click-id", mutate("demos", link="https://example.com/#/watch?fbclid=abc"), "fbclid")
 expect_fail("hash-query-token", mutate("papers", link="https://app.example.com/#?access_token=abc"), "access_token")
 expect_fail("impossible-month", mutate("papers", date="2026-13"), "date")
@@ -193,7 +199,7 @@ check("no-section-dirs", refused(p2, "missing section directory") and snap(out) 
 p, out = build(write_tree(all_valid()))
 before = snap(out) if p.returncode == 0 else None
 p2, _ = build("/nonexistent/entries-dir", out)
-check("missing-entries-dir", p2.returncode != 0 and "entries" in p2.stderr and snap(out) == before, p2.stderr.strip()[:160])
+check("missing-entries-dir", refused(p2, "does not exist") and snap(out) == before, p2.stderr.strip()[:160])
 p, _ = build(write_tree(mutate("demos", added="2026-10-30")))
 check("added-tomorrow-ok", p.returncode == 0, p.stderr.strip()[:160])   # one day of slack for authors east of UTC
 expect_fail("future-date", mutate("demos", added="2026-11-30"), "future")
@@ -280,6 +286,16 @@ for point in ("write", "swap"):
     stray = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
     check(f"fault-{point}", p1.returncode == 0 and p2.returncode != 0 and snap(out) == before and not stray,
           f"rc={p2.returncode} stray={stray}")
+
+# F11d: a build killed between the two renames left the previous site at .site-old-*/site; the next
+# build puts it back before anything else, so even a failing next build leaves it in place
+d = write_tree(all_valid()); p1, out = build(d)
+before = snap(out) if p1.returncode == 0 else None
+parent = os.path.dirname(out); stranded = tempfile.mkdtemp(prefix=".site-old-", dir=parent)
+os.rename(out, os.path.join(stranded, "site"))
+p2, _ = build(write_tree(mutate("papers", claim="likely")), out)
+check("recover-stranded", p1.returncode == 0 and p2.returncode != 0 and os.path.isdir(out) and snap(out) == before
+      and not os.path.exists(stranded), p2.stderr.strip()[:160])
 
 # F15
 d = write_tree(all_valid())

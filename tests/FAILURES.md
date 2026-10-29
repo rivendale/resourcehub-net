@@ -43,3 +43,6 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F32 | a credential-like query key (api_key, password, auth_token, session, client_secret...), or any key inside a hash route (`#/x?token=`) | exit non-zero | `credential-key-*`, `hash-route-token`, `hash-query-token` |
 | F33 | a date written in non-ASCII digits | exit non-zero: schema patterns match ASCII digits only | `fullwidth-date` |
 | -- | every failure test | passes only on the build's own refusal message, never on a traceback that happens to contain the needle | `refused()` in tests/run.py |
+| F34 | a URL field with a non-ASCII space, a `;`-separated key, or non-ASCII port digits | exit non-zero | `nbsp-in-url-field`, `semicolon-token`, `fullwidth-port` |
+| F35 | an ordinary anchor that happens to be a credential word (`#key-derivation`, `#auth`) | accepted: only key=value segments are keys | `anchors-ok` |
+| F11d | a build killed in the instant between moving the old site aside and the new one in | the next build restores the old site first; it is never lost | `recover-stranded` |
