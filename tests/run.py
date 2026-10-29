@@ -109,7 +109,7 @@ es = all_valid(); es[0]["id"] = "other-id"
 d = write_tree([e for e in es if e["section"] != "papers"]); os.makedirs(f"{d}/papers")
 json.dump(es[0], open(f"{d}/papers/ord-2026-intelligence-explosions.json", "w"))
 p, _ = build(d); check("id-mismatch", p.returncode != 0 and "other-id" in p.stderr, p.stderr.strip()[:160])
-dup = copy.deepcopy(BASE["papers"]); dup["section"] = "demos"
+dup = copy.deepcopy(BASE["demos"]); dup["id"] = BASE["papers"]["id"]   # valid as a demo; only the id clashes
 d = write_tree(all_valid(), raw={"demos/ord-2026-intelligence-explosions.json": json.dumps(dup)})
 p, _ = build(d); check("dup-id", p.returncode != 0 and "ord-2026-intelligence-explosions" in p.stderr, p.stderr.strip()[:160])
 # F6
@@ -123,6 +123,10 @@ expect_fail("http-url", mutate("papers", link="http://arxiv.org/abs/2608.14426")
 expect_fail("token-url", mutate("people", start_here=["https://example.com/post?token=abc"]), "token")
 expect_fail("utm-url", mutate("demos", link="https://example.com/v?utm_source=x"), "utm_source")
 # F12
+expect_fail("trailing-dot-tracker", mutate("papers", sources=["https://t.co./abc"]), "t.co")
+expect_fail("substack-share-id", mutate("papers", link="https://x.substack.com/p/post?r=1abcd"), "'r'")
+expect_fail("const-is-typed", mutate("repos", reviewed=1), "reviewed")
+expect_fail("control-char", mutate("papers", takeaway="a\u0001b"), "control character")
 expect_fail("future-date", mutate("demos", added="2026-11-30"), "future")
 expect_fail("bad-date", mutate("demos", added="2026/10/26"), "added")
 
@@ -164,9 +168,10 @@ check("empty-section", p.returncode == 0 and "No entries yet" in read(f"{out}/de
 # F11
 d_good, d_bad = write_tree(all_valid()), write_tree(mutate("papers", claim="likely"))
 p1, out = build(d_good)
-before = {f: open(os.path.join(r, f), "rb").read() for r, _, fs in os.walk(out) for f in fs} if p1.returncode == 0 else None
+snap = lambda o: {os.path.relpath(os.path.join(r, f), o): open(os.path.join(r, f), "rb").read() for r, _, fs in os.walk(o) for f in fs}
+before = snap(out) if p1.returncode == 0 else None
 p2, _ = build(d_bad, out)
-after = {f: open(os.path.join(r, f), "rb").read() for r, _, fs in os.walk(out) for f in fs} if os.path.isdir(out) else None
+after = snap(out) if os.path.isdir(out) else None
 check("no-partial", p1.returncode == 0 and p2.returncode != 0 and before == after)
 
 # F11b: a rebuild into an existing site drops an entry that was removed (no stale files)
@@ -175,6 +180,27 @@ d2 = write_tree([e for e in all_valid() if e["section"] != "demos"])
 p1, out = build(d1); p2, _ = build(d2, out)
 check("stale-removed", p1.returncode == 0 and p2.returncode == 0
       and not os.path.exists(f"{out}/entries/demos/demo-one.json") and os.path.isfile(f"{out}/papers/index.html"))
+
+# F17: never replace a directory the build did not make
+foreign = tempfile.mkdtemp(prefix="rh-foreign-"); open(f"{foreign}/keep.txt", "w").write("x")
+p, _ = build(write_tree(all_valid()), foreign)
+check("refuse-foreign-out", p.returncode != 0 and "previous build" in p.stderr and os.path.isfile(f"{foreign}/keep.txt"), p.stderr.strip()[:160])
+p, out = build(write_tree(all_valid()))
+check("site-readable", p.returncode == 0 and (os.stat(out).st_mode & 0o777) == 0o755 and os.path.isfile(f"{out}/.resourcehub-build"),
+      oct(os.stat(out).st_mode & 0o777) if os.path.isdir(out) else "no out")
+
+# F13b: the feed carries the newest 50; every other output carries every entry
+many = []
+for i in range(55):
+    e = copy.deepcopy(BASE["papers"]); e["id"] = f"paper-{i:02d}"; e["added"] = f"2026-09-{(i % 28) + 1:02d}"
+    many.append(e)
+p, out = build(write_tree(many))
+if p.returncode == 0:
+    items = ET.parse(f"{out}/feed.xml").getroot().findall("./channel/item")
+    check("feed-newest-50", len(items) == 50 and len(json.load(open(f"{out}/index.json"))["entries"]) == 55
+          and all(os.path.isfile(f"{out}/entries/papers/paper-{i:02d}.json") for i in range(55)), f"items={len(items)}")
+else:
+    check("feed-newest-50", False, p.stderr.strip()[:160])
 
 # F15
 d = write_tree(all_valid())

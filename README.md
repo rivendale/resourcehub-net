@@ -2,7 +2,7 @@
 
 A public, reviewed index of research papers, people to follow, open-source repo reviews and AI
 demos. Built for people and for agents: every entry is also JSON, with `index.json`, `llms.txt`,
-`llms-full.txt` and an RSS feed.
+`llms-full.txt` and an RSS feed of the newest 50.
 
 ## How an entry gets here
 

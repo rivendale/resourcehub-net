@@ -10,9 +10,10 @@ section, entries/<section>/<id>.json, index.json, llms.txt, llms-full.txt, feed.
 per-section schemas under schemas/. The build writes a temp dir and swaps it in only when everything
 succeeded, so a bad entry leaves the previous site untouched. RH_NOW (ISO UTC) pins the clock for tests.
 
-What the build refuses (tests/FAILURES.md): anything off-schema, unknown fields, a URL that is not https,
-a redirect or tracker host, and a query key that can carry a subscriber's identity. Truth is the review
-gate's job, not the build's.
+What the build refuses (tests/FAILURES.md): anything off-schema, unknown fields, control characters, a URL
+that is not https, a redirect or tracker host, a query key that can identify a reader, and an --out
+directory it did not make. feed.xml carries the newest 50 entries; every other output carries all of
+them. Truth is the review gate's job, not the build's.
 """
 import argparse
 import datetime
@@ -36,6 +37,8 @@ SECTIONS = [
 ]
 TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly", "tinyurl.com", "goo.gl"}
 TOKEN_KEYS = {"token", "key", "sig", "signature", "auth", "email", "subscriber", "access_token"}
+MARKER = ".resourcehub-build"   # only a directory carrying this is ever replaced
+CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")   # XML 1.0 forbids these; JSON allows them
 
 
 def die(msg):
@@ -74,7 +77,8 @@ TYPES = {"string": str, "integer": int, "boolean": bool, "array": list, "object"
 def validate(value, schema, where):
     """The JSON Schema subset the schemas use. Returns a list of 'path: problem' strings."""
     errs = []
-    if "const" in schema and value != schema["const"]:
+    # Typed: in Python 1 == True, but the JSON schema means the boolean.
+    if "const" in schema and not (value == schema["const"] and type(value) is type(schema["const"])):
         return [f"{where}: must be {json.dumps(schema['const'])}"]
     types = schema.get("type")
     if types:
@@ -85,6 +89,8 @@ def validate(value, schema, where):
     if "enum" in schema and value not in schema["enum"]:
         errs.append(f"{where}: {value!r} is not one of {schema['enum']}")
     if isinstance(value, str):
+        if CONTROL.search(value):
+            errs.append(f"{where}: contains a control character")
         if "pattern" in schema and not re.search(schema["pattern"], value):
             errs.append(f"{where}: {value!r} does not match {schema['pattern']}")
         if len(value) < schema.get("minLength", 0) or len(value) > schema.get("maxLength", 10 ** 9):
@@ -132,7 +138,7 @@ def link_problems(entry, where):
         if not re.match(r"^[a-z]+://", s, re.I):
             continue
         u = urllib.parse.urlsplit(s)
-        host = (u.hostname or "").lower()
+        host = (u.hostname or "").lower().rstrip(".")   # t.co. is t.co
         if u.scheme != "https":
             errs.append(f"{path}: {s!r} is not https")
         if host in TRACKER_HOSTS:
@@ -140,7 +146,7 @@ def link_problems(entry, where):
         if host.endswith("substack.com") and "/redirect/" in u.path:
             errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
         for k, _ in urllib.parse.parse_qsl(u.query, keep_blank_values=True):
-            if k.lower() in TOKEN_KEYS or k.lower().startswith("utm_"):
+            if k.lower() in TOKEN_KEYS or k.lower().startswith("utm_") or (host.endswith("substack.com") and k == "r"):
                 errs.append(f"{path}: query key '{k}' can carry a reader's identity; drop it")
     return errs
 
@@ -214,7 +220,8 @@ dt{font-weight:600;margin-top:6px}dd{margin:0 0 4px}
 
 
 def page(title, body, current=None, desc=""):
-    nav = "".join(f'<a href="/{s}/"{" aria-current=\"page\"" if s == current else ""}>{esc(t)}</a>' for s, t, _ in SECTIONS)
+    here = ' aria-current="page"'
+    nav = "".join(f'<a href="/{s}/"{here if s == current else ""}>{esc(t)}</a>' for s, t, _ in SECTIONS)
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
@@ -276,6 +283,7 @@ def write(path, text):
 def render(entries, schemas, out):
     every = sorted((e for es in entries.values() for e in es), key=lambda e: (e["added"], e["id"]), reverse=True)
     stamp = every[0]["added"] if every else today().isoformat()
+    write(f"{out}/{MARKER}", "written by build.py; marks this directory as safe to replace\n")
     write(f"{out}/style.css", CSS)
     write(f"{out}/.nojekyll", "")
     write(f"{out}/robots.txt", "User-agent: *\nAllow: /\n")
@@ -327,9 +335,12 @@ def main():
     schemas = load_schemas(a.schemas)
     entries = load_entries(a.entries, schemas)
     out = os.path.abspath(a.out)
+    if os.path.exists(out) and not os.path.isfile(os.path.join(out, MARKER)):
+        die(f"refusing to replace {out}: it is not a previous build (no {MARKER})")
     parent = os.path.dirname(out)
     os.makedirs(parent, exist_ok=True)
     tmp = tempfile.mkdtemp(prefix=".site-", dir=parent)
+    os.chmod(tmp, 0o755)   # mkdtemp makes it 0700
     try:
         render(entries, schemas, tmp)
         old = None
