@@ -45,4 +45,5 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | -- | every failure test | passes only on the build's own refusal message, never on a traceback that happens to contain the needle | `refused()` in tests/run.py |
 | F34 | a URL field with a non-ASCII space, a `;`-separated key, or non-ASCII port digits | exit non-zero | `nbsp-in-url-field`, `semicolon-token`, `fullwidth-port` |
 | F35 | an ordinary anchor that happens to be a credential word (`#key-derivation`, `#auth`) | accepted: only key=value segments are keys | `anchors-ok` |
-| F11d | a build killed in the instant between moving the old site aside and the new one in | the next build restores the old site first; it is never lost | `recover-stranded` |
+| F11d | a rebuild replacing an existing site | on Linux one atomic exchange (renameat2 RENAME_EXCHANGE): no instant with the site missing, nothing left beside it. Elsewhere two renames, with the old site restored on any error the build sees | `atomic-swap`, `fault-swap` |
+| F36 | identifying words inside a longer key (`ck_subscriber_id`, `user_email`), or a non-breaking space inside a prose URL | exit non-zero | `subscriber-id`, `user-email`, `prose-nbsp-url` |

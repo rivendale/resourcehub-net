@@ -18,7 +18,7 @@ them. Truth is the review gate's job, not the build's.
 import argparse
 import datetime
 import email.utils
-import glob
+import errno
 import html
 import json
 import os
@@ -43,7 +43,8 @@ TOKEN_KEYS = {"token", "key", "sig", "signature", "auth", "email", "subscriber",
 # Any word of a key (split on non-alphanumerics) that marks it as a credential: api_key, auth_token,
 # client_secret, sessionid... Whole words, so `author` and `keyword` are not caught.
 CREDENTIAL_WORDS = {"token", "secret", "password", "passwd", "pwd", "auth", "session", "sessionid", "sid",
-                    "signature", "sig", "key", "apikey", "credential", "credentials"}
+                    "signature", "sig", "key", "apikey", "credential", "credentials",
+                    "email", "subscriber", "subscriberid"}   # reader identity too: ck_subscriber_id, user_email
 MARKER = ".resourcehub-build"   # only a directory carrying this is ever replaced
 # JSON allows these, XML 1.0 does not (and entries are single-line text): controls incl. newline and tab,
 # the non-characters U+FFFE/U+FFFF, and lone surrogates.
@@ -53,7 +54,9 @@ FORBIDDEN = re.compile("[\x00-\x1f\x7f\ufffe\uffff\ud800-\udfff]")
 # backslash a browser would rewrite) is refused rather than parsed charitably.
 LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
 URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::(?P<port>[0-9]{{1,5}}))?(?P<rest>[/?#][^\s\\\"'<>]*)?$")
-URL_IN_TEXT = re.compile(r"[a-z][a-z0-9+.-]*://[^\s<>\"']+", re.I)   # only scheme:// is a URL; "BERT: ..." is not
+# Only scheme:// is a URL ("BERT: ..." is not). It ends at an ASCII space, so a non-breaking space inside it
+# stays part of the candidate and URL_RE refuses the whole thing.
+URL_IN_TEXT = re.compile(r"[a-z][a-z0-9+.-]*://[^ <>\"']+", re.I)
 TRAILING = ".,;:!?)]}"
 _writes = 0
 
@@ -413,6 +416,22 @@ def render(entries, schemas, out):
           + "".join(items) + "</channel></rss>\n")
 
 
+def exchange(a, b):
+    """Swap two paths in one atomic step (Linux renameat2 RENAME_EXCHANGE), so the live site is never
+    missing. False where the kernel or filesystem cannot; the caller then falls back to two renames."""
+    try:
+        import ctypes
+        fn = ctypes.CDLL(None, use_errno=True).renameat2
+    except (OSError, AttributeError):
+        return False
+    if fn(-100, os.fsencode(a), -100, os.fsencode(b), 2) == 0:   # AT_FDCWD, RENAME_EXCHANGE
+        return True
+    err = ctypes.get_errno()
+    if err in (errno.EINVAL, errno.ENOSYS, errno.EOPNOTSUPP):
+        return False
+    raise OSError(err, os.strerror(err), b)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--entries", default=os.path.join(ROOT, "entries"))
@@ -421,14 +440,6 @@ def main():
     a = ap.parse_args()
     out = os.path.abspath(a.out)
     parent = os.path.dirname(out)
-    # First, before anything can fail: a build killed between the two renames left the previous site
-    # aside in .site-old-*/site. Put it back, so no later failure can leave the output missing.
-    if not os.path.exists(out):
-        stranded = sorted(glob.glob(os.path.join(parent, ".site-old-*", "site", MARKER)))
-        if stranded:
-            os.rename(os.path.dirname(stranded[-1]), out)
-            shutil.rmtree(os.path.dirname(os.path.dirname(stranded[-1])), ignore_errors=True)
-            print(f"build.py: restored the previous site from an interrupted build into {out}", file=sys.stderr)
     if not os.path.isdir(a.entries):
         die(f"entries directory {a.entries} does not exist; refusing to publish an empty site over the real one")
     schemas = load_schemas(a.schemas)
@@ -448,12 +459,21 @@ def main():
     except BaseException:
         shutil.rmtree(tmp, ignore_errors=True)
         raise
+    try:
+        fault("swap")
+        swapped = os.path.exists(out) and exchange(tmp, out)
+    except BaseException:
+        shutil.rmtree(tmp, ignore_errors=True)
+        raise
+    if swapped:   # tmp now holds the previous site
+        shutil.rmtree(tmp)
+        print(f"built {sum(len(v) for v in entries.values())} entries into {out} (atomic swap)")
+        return
     old = None
     if os.path.exists(out):
         old = tempfile.mkdtemp(prefix=".site-old-", dir=parent)
         os.rename(out, os.path.join(old, "site"))
     try:
-        fault("swap")
         os.rename(tmp, out)
     except BaseException:
         if old:   # put the previous site back before giving up

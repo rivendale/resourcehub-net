@@ -179,6 +179,9 @@ expect_fail("fullwidth-port", mutate("papers", link="https://example.com:\uff14\
 p, _ = build(write_tree(mutate("papers", link="https://docs.python.org/3/library/hashlib.html#key-derivation",
                                  sources=["https://example.com/guide#auth", "https://example.com/rfc#session-management"])))
 check("anchors-ok", p.returncode == 0, p.stderr.strip()[:200])   # an anchor is not a key=value pair
+expect_fail("subscriber-id", mutate("papers", link="https://example.com/post?ck_subscriber_id=12345"), "ck_subscriber_id")
+expect_fail("user-email", mutate("papers", link="https://example.com/post?user_email=a"), "user_email")
+expect_fail("prose-nbsp-url", mutate("papers", takeaway="Read https://example.com/post\u00a0?token=abc first"), "takeaway")
 expect_fail("hash-route-click-id", mutate("demos", link="https://example.com/#/watch?fbclid=abc"), "fbclid")
 expect_fail("hash-query-token", mutate("papers", link="https://app.example.com/#?access_token=abc"), "access_token")
 expect_fail("impossible-month", mutate("papers", date="2026-13"), "date")
@@ -287,15 +290,12 @@ for point in ("write", "swap"):
     check(f"fault-{point}", p1.returncode == 0 and p2.returncode != 0 and snap(out) == before and not stray,
           f"rc={p2.returncode} stray={stray}")
 
-# F11d: a build killed between the two renames left the previous site at .site-old-*/site; the next
-# build puts it back before anything else, so even a failing next build leaves it in place
-d = write_tree(all_valid()); p1, out = build(d)
-before = snap(out) if p1.returncode == 0 else None
-parent = os.path.dirname(out); stranded = tempfile.mkdtemp(prefix=".site-old-", dir=parent)
-os.rename(out, os.path.join(stranded, "site"))
-p2, _ = build(write_tree(mutate("papers", claim="likely")), out)
-check("recover-stranded", p1.returncode == 0 and p2.returncode != 0 and os.path.isdir(out) and snap(out) == before
-      and not os.path.exists(stranded), p2.stderr.strip()[:160])
+# F11d: on Linux a rebuild swaps the old and new site in one atomic exchange, so there is no instant with
+# the site missing and nothing is left beside it
+d = write_tree(all_valid()); p1, out = build(d); p2, _ = build(d, out)
+leftover = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
+check("atomic-swap", p1.returncode == 0 and p2.returncode == 0 and "atomic swap" in p2.stdout and not leftover,
+      f"stdout={p2.stdout.strip()[:120]} leftover={leftover}")
 
 # F15
 d = write_tree(all_valid())
