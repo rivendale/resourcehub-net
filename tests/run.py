@@ -55,10 +55,13 @@ def write_tree(entries, raw=None):
     return d
 
 
-def build(entries_dir, out=None):
+def build(entries_dir, out=None, fault=None):
     out = out or tempfile.mkdtemp(prefix="rh-out-") + "/site"
+    env = {**os.environ, "RH_NOW": NOW}
+    if fault:
+        env["RH_FAULT"] = fault
     p = subprocess.run([sys.executable, "-I", os.path.join(ROOT, "build.py"), "--entries", entries_dir, "--out", out],
-                       capture_output=True, text=True, env={**os.environ, "RH_NOW": NOW})
+                       capture_output=True, text=True, env=env)
     return p, out
 
 
@@ -126,7 +129,20 @@ expect_fail("utm-url", mutate("demos", link="https://example.com/v?utm_source=x"
 expect_fail("trailing-dot-tracker", mutate("papers", sources=["https://t.co./abc"]), "t.co")
 expect_fail("substack-share-id", mutate("papers", link="https://x.substack.com/p/post?r=1abcd"), "'r'")
 expect_fail("const-is-typed", mutate("repos", reviewed=1), "reviewed")
-expect_fail("control-char", mutate("papers", takeaway="a\u0001b"), "control character")
+expect_fail("control-char", mutate("papers", takeaway="a\u0001b"), "forbidden character")
+expect_fail("userinfo-url", mutate("papers", link="https://user:secret@example.com/p"), "credentials")
+expect_fail("backslash-url", mutate("papers", link="https://bit.ly\\abc"), "link")
+expect_fail("pct-host", mutate("papers", link="https://t%2Eco/abc"), "link")
+expect_fail("hostless-url", mutate("papers", link="https://?x"), "link")
+expect_fail("tracker-subdomain", mutate("papers", sources=["https://maps.app.goo.gl/abc"]), "goo.gl")
+expect_fail("tracker-www", mutate("papers", sources=["https://www.tinyurl.com/abc"]), "tinyurl.com")
+expect_fail("trailing-newline", mutate("demos", capability_tag="coding\n"), "forbidden character")
+expect_fail("xml-nonchar", mutate("papers", takeaway="x\uffff"), "forbidden character")
+lone = json.dumps(BASE["papers"]).replace('"A runaway takeoff', '"\\ud800 A runaway takeoff')
+expect_fail("lone-surrogate", [e for e in all_valid() if e["section"] != "papers"], "forbidden character",
+            raw={f"papers/{BASE['papers']['id']}.json": lone})
+p, _ = build(write_tree(mutate("demos", added="2026-10-30")))
+check("added-tomorrow-ok", p.returncode == 0, p.stderr.strip()[:160])   # one day of slack for authors east of UTC
 expect_fail("future-date", mutate("demos", added="2026-11-30"), "future")
 expect_fail("bad-date", mutate("demos", added="2026/10/26"), "added")
 
@@ -152,9 +168,11 @@ try:
     dates = [i.findtext("pubDate") for i in items]
     check("feed-newest-first", [i.findtext("guid") for i in items][0].endswith("ord-2026-intelligence-explosions.json"), str(dates))
     check("no-cname", not os.path.exists(f"{out}/CNAME"))
-    bad = [f for r, _, fs in os.walk(out) for f in fs if f.endswith(".html")
-           and ("http://localhost" in open(os.path.join(r, f)).read() or 'href="file:' in open(os.path.join(r, f)).read())]
-    check("root-relative", not bad, str(bad))
+    import re as _re
+    hrefs = [h for r, _, fs in os.walk(out) for f in fs if f.endswith(".html")
+             for h in _re.findall(r'(?:href|src)="([^"]*)"', open(os.path.join(r, f)).read())]
+    bad = [h for h in hrefs if not (h.startswith("/") or h.startswith("https://") or h.startswith("#"))]
+    check("root-relative", hrefs and not bad and any(h.startswith("/") for h in hrefs), str(bad[:5]))
     for s in ("papers", "people", "repos", "demos"):
         sch = json.load(open(f"{out}/schemas/{s}.schema.json"))
         check(f"merged-schema:{s}", "id" in sch["properties"] and "added" in sch["required"])
@@ -201,6 +219,15 @@ if p.returncode == 0:
           and all(os.path.isfile(f"{out}/entries/papers/paper-{i:02d}.json") for i in range(55)), f"items={len(items)}")
 else:
     check("feed-newest-50", False, p.stderr.strip()[:160])
+
+# F11c: a failure while writing, or between the two renames, leaves the old site whole and no stray dirs
+for point in ("write", "swap"):
+    d = write_tree(all_valid()); p1, out = build(d)
+    before = snap(out) if p1.returncode == 0 else None
+    p2, _ = build(d, out, fault=point)
+    stray = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
+    check(f"fault-{point}", p1.returncode == 0 and p2.returncode != 0 and snap(out) == before and not stray,
+          f"rc={p2.returncode} stray={stray}")
 
 # F15
 d = write_tree(all_valid())

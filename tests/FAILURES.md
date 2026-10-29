@@ -25,3 +25,7 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F15 | output differs between two builds of the same input | byte-identical (sorted, no wall-clock stamps beyond RH_NOW) | `deterministic` |
 | F16 | absolute or host-bound paths, or a CNAME file in the output | root-relative links only; no CNAME (the Pages API sets the domain) | `all-outputs` |
 | F17 | `--out` names a directory the build did not make (the repo root, a home dir) | refuse, touch nothing; only a dir carrying `.resourcehub-build` is replaced, and the result is world-readable | `refuse-foreign-out`, `site-readable` |
+| F18 | a URL with credentials (`user:pass@`), a backslash, a percent-encoded or missing host, or a subdomain of a tracker host | exit non-zero: only a plain https URL with an ASCII host is published | `userinfo-url`, `backslash-url`, `pct-host`, `hostless-url`, `tracker-subdomain`, `tracker-www` |
+| F19 | text with a character XML 1.0 forbids (controls incl. newline, U+FFFE/U+FFFF, lone surrogates) | exit non-zero, so feed.xml always parses | `trailing-newline`, `xml-nonchar`, `lone-surrogate` |
+| F20 | `added` is today somewhere east of UTC | accepted: one day of slack; further ahead fails | `added-tomorrow-ok`, `future-date` |
+| F11c | a failure while writing files, or between moving the old site aside and the new one in | the old site is restored whole; no stray temp dirs | `fault-write`, `fault-swap` |

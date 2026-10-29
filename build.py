@@ -10,8 +10,8 @@ section, entries/<section>/<id>.json, index.json, llms.txt, llms-full.txt, feed.
 per-section schemas under schemas/. The build writes a temp dir and swaps it in only when everything
 succeeded, so a bad entry leaves the previous site untouched. RH_NOW (ISO UTC) pins the clock for tests.
 
-What the build refuses (tests/FAILURES.md): anything off-schema, unknown fields, control characters, a URL
-that is not https, a redirect or tracker host, a query key that can identify a reader, and an --out
+What the build refuses (tests/FAILURES.md): anything off-schema, unknown fields, characters XML forbids, a URL
+that is not a plain https URL (credentials, odd hosts), a redirect or tracker host (and its subdomains), a query key that can identify a reader, and an --out
 directory it did not make. feed.xml carries the newest 50 entries; every other output carries all of
 them. Truth is the review gate's job, not the build's.
 """
@@ -38,7 +38,15 @@ SECTIONS = [
 TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly", "tinyurl.com", "goo.gl"}
 TOKEN_KEYS = {"token", "key", "sig", "signature", "auth", "email", "subscriber", "access_token"}
 MARKER = ".resourcehub-build"   # only a directory carrying this is ever replaced
-CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")   # XML 1.0 forbids these; JSON allows them
+# JSON allows these, XML 1.0 does not (and entries are single-line text): controls incl. newline and tab,
+# the non-characters U+FFFE/U+FFFF, and lone surrogates.
+FORBIDDEN = re.compile("[\x00-\x1f\x7f\ufffe\uffff\ud800-\udfff]")
+# A plain https URL: an ASCII host of dot-separated labels, an optional port, then path/query/fragment
+# with no whitespace or backslash. Anything else (credentials, a percent-encoded or missing host, a
+# backslash a browser would rewrite) is refused rather than parsed charitably.
+LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
+URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::\d{{1,5}})?(?P<rest>[/?#][^\s\\]*)?$")
+_writes = 0
 
 
 def die(msg):
@@ -89,8 +97,8 @@ def validate(value, schema, where):
     if "enum" in schema and value not in schema["enum"]:
         errs.append(f"{where}: {value!r} is not one of {schema['enum']}")
     if isinstance(value, str):
-        if CONTROL.search(value):
-            errs.append(f"{where}: contains a control character")
+        if FORBIDDEN.search(value):
+            errs.append(f"{where}: contains a forbidden character (XML 1.0)")
         if "pattern" in schema and not re.search(schema["pattern"], value):
             errs.append(f"{where}: {value!r} does not match {schema['pattern']}")
         if len(value) < schema.get("minLength", 0) or len(value) > schema.get("maxLength", 10 ** 9):
@@ -135,13 +143,21 @@ def strings(value, where):
 def link_problems(entry, where):
     errs = []
     for path, s in strings(entry, where):
-        if not re.match(r"^[a-z]+://", s, re.I):
+        if not re.match(r"^[a-z][a-z0-9+.-]*:", s, re.I):
             continue
-        u = urllib.parse.urlsplit(s)
-        host = (u.hostname or "").lower().rstrip(".")   # t.co. is t.co
-        if u.scheme != "https":
+        if not s.lower().startswith("https://"):
             errs.append(f"{path}: {s!r} is not https")
-        if host in TRACKER_HOSTS:
+            continue
+        if "@" in re.split(r"[/?#]", s[len("https://"):], maxsplit=1)[0]:
+            errs.append(f"{path}: the URL embeds credentials (user@ or user:pass@); never publish them")
+            continue
+        m = URL_RE.match(s)
+        if not m:
+            errs.append(f"{path}: {s!r} is not a plain https URL with an ASCII host")
+            continue
+        host = m.group("host").lower()
+        u = urllib.parse.urlsplit(s)
+        if any(host == t or host.endswith("." + t) for t in TRACKER_HOSTS):
             errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
         if host.endswith("substack.com") and "/redirect/" in u.path:
             errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
@@ -179,7 +195,8 @@ def load_entries(entries_dir, schemas):
                 problems.append(f"{path}: id {e.get('id')!r} differs from the file name")
             if isinstance(e.get("added"), str) and re.match(r"^\d{4}-\d{2}-\d{2}$", e["added"]):
                 try:
-                    if datetime.date.fromisoformat(e["added"]) > today():
+                    # One day of slack: an author east of UTC writes today's date before UTC does.
+                    if datetime.date.fromisoformat(e["added"]) > today() + datetime.timedelta(days=1):
                         problems.append(f"{path}: added {e['added']} is in the future")
                 except ValueError:
                     problems.append(f"{path}: added {e['added']!r} is not a real date")
@@ -274,7 +291,17 @@ def summary_line(e):
     return title, gist
 
 
+def fault(point):
+    """Test seam: RH_FAULT=write|swap makes the build fail at that point (tests/run.py, F11c)."""
+    if os.environ.get("RH_FAULT") == point:
+        raise OSError(f"injected fault at {point}")
+
+
 def write(path, text):
+    global _writes
+    _writes += 1
+    if _writes == 3:
+        fault("write")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
@@ -343,16 +370,24 @@ def main():
     os.chmod(tmp, 0o755)   # mkdtemp makes it 0700
     try:
         render(entries, schemas, tmp)
-        old = None
-        if os.path.exists(out):
-            old = tempfile.mkdtemp(prefix=".site-old-", dir=parent)
-            os.rename(out, os.path.join(old, "site"))
-        os.rename(tmp, out)
-        if old:
-            shutil.rmtree(old)
     except BaseException:
         shutil.rmtree(tmp, ignore_errors=True)
         raise
+    old = None
+    if os.path.exists(out):
+        old = tempfile.mkdtemp(prefix=".site-old-", dir=parent)
+        os.rename(out, os.path.join(old, "site"))
+    try:
+        fault("swap")
+        os.rename(tmp, out)
+    except BaseException:
+        if old:   # put the previous site back before giving up
+            os.rename(os.path.join(old, "site"), out)
+            shutil.rmtree(old, ignore_errors=True)
+        shutil.rmtree(tmp, ignore_errors=True)
+        raise
+    if old:
+        shutil.rmtree(old)
     print(f"built {sum(len(v) for v in entries.values())} entries into {out}")
 
 
