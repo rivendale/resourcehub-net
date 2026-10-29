@@ -11,7 +11,7 @@ per-section schemas under schemas/. The build writes a temp dir and swaps it in 
 succeeded, so a bad entry leaves the previous site untouched. RH_NOW (ISO UTC) pins the clock for tests.
 
 What the build refuses (tests/FAILURES.md): anything off-schema, unknown fields, characters XML forbids, a URL
-that is not a plain https URL (credentials, odd hosts), a redirect or tracker host (and its subdomains), a query key that can identify a reader, and an --out
+that is not a plain https URL (credentials, odd hosts), a redirect or tracker host (and its subdomains), a query key not on the allow-list, and an --out
 directory it did not make. feed.xml carries the newest 50 entries; every other output carries all of
 them. Truth is the review gate's job, not the build's.
 """
@@ -37,14 +37,10 @@ SECTIONS = [
     ("demos", "Demos", "Dated demonstrations of what AI systems can do, as a record of progress."),
 ]
 TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly", "tinyurl.com", "goo.gl"}
-# Query keys that carry a reader's identity: credentials, newsletter recipient ids, ad click ids, share ids.
-TOKEN_KEYS = {"token", "key", "sig", "signature", "auth", "email", "subscriber", "access_token",
-              "fbclid", "gclid", "dclid", "msclkid", "mc_eid", "mc_cid", "_hsenc", "_hsmi", "igshid", "si"}
-# Any word of a key (split on non-alphanumerics) that marks it as a credential: api_key, auth_token,
-# client_secret, sessionid... Whole words, so `author` and `keyword` are not caught.
-CREDENTIAL_WORDS = {"token", "secret", "password", "passwd", "pwd", "auth", "session", "sessionid", "sid",
-                    "signature", "sig", "key", "apikey", "credential", "credentials",
-                    "email", "subscriber", "subscriberid"}   # reader identity too: ck_subscriber_id, user_email
+# Query keys a published link may carry. An allow-list, because nine review rounds showed a blocklist of
+# identifying keys never converges (authToken, PHPSESSID, ck_subscriber_id, a custom-domain substack's r...).
+# Any other key is refused: link the clean URL, or add the key here after checking it cannot identify a reader.
+ALLOWED_QUERY_KEYS = {"v", "t", "list", "index", "id", "p", "page", "q", "lang", "hl", "tab"}
 MARKER = ".resourcehub-build"   # only a directory carrying this is ever replaced
 # JSON allows these, XML 1.0 does not (and entries are single-line text): controls incl. newline and tab,
 # the non-characters U+FFFE/U+FFFF, and lone surrogates.
@@ -169,18 +165,14 @@ def url_problems(s, path):
         errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
     if host.endswith("substack.com") and "/redirect/" in u.path:
         errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
-    frag = u.fragment
-    # key=value segments only (a bare #anchor is not a key), split on & and ; (both are separators),
-    # in the query, the fragment, and the query inside a hash route (#/route?token=).
-    keys = [urllib.parse.unquote_plus(seg.split("=", 1)[0])
-            for part in (u.query, frag, frag.split("?", 1)[1] if "?" in frag else "")
-            for seg in re.split(r"[&;]", part) if "=" in seg]
-    for k in keys:
-        kl = k.lower()
-        words = set(re.split(r"[^a-z0-9]+", kl))
-        if (kl in TOKEN_KEYS or kl.startswith("utm_") or words & CREDENTIAL_WORDS
-                or (host.endswith("substack.com") and kl == "r")):
-            errs.append(f"{path}: query key '{k}' can identify a reader; drop it")
+    if re.search(r";[^/]*=", u.path):
+        errs.append(f"{path}: a path parameter (;name=value, e.g. ;jsessionid=) can carry a session; drop it")
+    if any(c in u.fragment for c in "=?&"):
+        errs.append(f"{path}: the fragment {u.fragment!r} carries data, not just an anchor; drop it")
+    for seg in re.split(r"[&;]", u.query):
+        k = urllib.parse.unquote_plus(seg.split("=", 1)[0])
+        if seg and k not in ALLOWED_QUERY_KEYS:
+            errs.append(f"{path}: query key '{k}' is not allow-listed (ALLOWED_QUERY_KEYS); link the clean URL")
     return errs
 
 
@@ -419,10 +411,12 @@ def render(entries, schemas, out):
 def exchange(a, b):
     """Swap two paths in one atomic step (Linux renameat2 RENAME_EXCHANGE), so the live site is never
     missing. False where the kernel or filesystem cannot; the caller then falls back to two renames."""
+    if os.environ.get("RH_FAULT", "").startswith("fallback"):   # test seam: exercise the two-rename path
+        return False
     try:
         import ctypes
         fn = ctypes.CDLL(None, use_errno=True).renameat2
-    except (OSError, AttributeError):
+    except (ImportError, OSError, AttributeError):   # no ctypes, no libc symbol: fall back
         return False
     if fn(-100, os.fsencode(a), -100, os.fsencode(b), 2) == 0:   # AT_FDCWD, RENAME_EXCHANGE
         return True
@@ -440,6 +434,8 @@ def main():
     a = ap.parse_args()
     out = os.path.abspath(a.out)
     parent = os.path.dirname(out)
+    if os.path.islink(out):
+        die(f"refusing to replace {out}: it is a symlink; point --out at the real directory")
     if not os.path.isdir(a.entries):
         die(f"entries directory {a.entries} does not exist; refusing to publish an empty site over the real one")
     schemas = load_schemas(a.schemas)
@@ -474,6 +470,7 @@ def main():
         old = tempfile.mkdtemp(prefix=".site-old-", dir=parent)
         os.rename(out, os.path.join(old, "site"))
     try:
+        fault("fallback-rename")
         os.rename(tmp, out)
     except BaseException:
         if old:   # put the previous site back before giving up

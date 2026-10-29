@@ -170,8 +170,13 @@ expect_fail("impossible-date", mutate("repos", pushed="2026-02-30"), "pushed")
 expect_fail("fullwidth-date", mutate("repos", pushed="\uff12\uff10\uff12\uff16-\uff11\uff13-\uff14\uff15"), "pushed")
 for key in ("api_key", "password", "auth_token", "session", "client_secret"):
     expect_fail(f"credential-key-{key}", mutate("papers", link=f"https://example.com/doc?{key}=abc"), key)
-p, _ = build(write_tree(mutate("papers", link="https://example.com/p?author=x&keyword=y&page=2#section-3")))
-check("innocent-keys-ok", p.returncode == 0, p.stderr.strip()[:200])   # whole words: author/keyword are not credentials
+p, _ = build(write_tree(mutate("demos", link="https://www.youtube.com/watch?v=abc123&t=42#section-3")))
+check("allowed-keys-ok", p.returncode == 0, p.stderr.strip()[:200])   # allow-listed keys and a plain anchor pass
+for key in ("authToken", "clientSecret", "PHPSESSID", "author"):   # not allow-listed: refused, whatever the spelling
+    expect_fail(f"unlisted-key-{key}", mutate("papers", link=f"https://example.com/doc?{key}=abc"), key)
+expect_fail("custom-domain-substack-r", mutate("people", start_here=["https://www.oneusefulthing.org/p/post?r=1abcd"]), "'r'")
+expect_fail("path-param-session", mutate("papers", link="https://example.com/doc;jsessionid=abc"), "path parameter")
+expect_fail("fragment-key-value", mutate("papers", link="https://example.com/#state=xyz"), "fragment")
 expect_fail("hash-route-token", mutate("papers", link="https://app.example.com/#/reset?token=abc"), "token")
 expect_fail("nbsp-in-url-field", mutate("papers", link="https://example.com/p\u00a0?token=abc"), "link")
 expect_fail("semicolon-token", mutate("papers", link="https://example.com/?x=1;token=private"), "token")
@@ -294,8 +299,19 @@ for point in ("write", "swap"):
 # the site missing and nothing is left beside it
 d = write_tree(all_valid()); p1, out = build(d); p2, _ = build(d, out)
 leftover = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
-check("atomic-swap", p1.returncode == 0 and p2.returncode == 0 and "atomic swap" in p2.stdout and not leftover,
-      f"stdout={p2.stdout.strip()[:120]} leftover={leftover}")
+check("atomic-swap", p1.returncode == 0 and p2.returncode == 0 and not leftover
+      and ("atomic swap" in p2.stdout or sys.platform != "linux"), f"stdout={p2.stdout.strip()[:120]} leftover={leftover}")
+# the two-rename fallback (non-Linux, or no RENAME_EXCHANGE) restores the old site if the second rename fails
+d = write_tree(all_valid()); p1, out = build(d)
+before = snap(out) if p1.returncode == 0 else None
+p2, _ = build(d, out, fault="fallback-rename")
+stray = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
+check("fallback-rollback", p1.returncode == 0 and p2.returncode != 0 and snap(out) == before and not stray, f"stray={stray}")
+# a symlinked --out is refused rather than swapped as a link
+real = write_tree(all_valid()); p1, target = build(real)
+link = tempfile.mkdtemp(prefix="rh-link-") + "/site"; os.symlink(target, link)
+p2, _ = build(real, link)
+check("symlink-out-refused", refused(p2, "symlink") and os.path.islink(link), p2.stderr.strip()[:160])
 
 # F15
 d = write_tree(all_valid())

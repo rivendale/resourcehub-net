@@ -47,3 +47,6 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F35 | an ordinary anchor that happens to be a credential word (`#key-derivation`, `#auth`) | accepted: only key=value segments are keys | `anchors-ok` |
 | F11d | a rebuild replacing an existing site | on Linux one atomic exchange (renameat2 RENAME_EXCHANGE): no instant with the site missing, nothing left beside it. Elsewhere two renames, with the old site restored on any error the build sees | `atomic-swap`, `fault-swap` |
 | F36 | identifying words inside a longer key (`ck_subscriber_id`, `user_email`), or a non-breaking space inside a prose URL | exit non-zero | `subscriber-id`, `user-email`, `prose-nbsp-url` |
+| F37 | a query key not on the allow-list (any spelling: authToken, clientSecret, PHPSESSID, a custom-domain substack's r) | exit non-zero: only allow-listed keys (build.py ALLOWED_QUERY_KEYS) are published; a blocklist never converged | `unlisted-key-*`, `custom-domain-substack-r`, `allowed-keys-ok` |
+| F38 | a path parameter (`;jsessionid=`) or a key=value fragment (`#state=`) | exit non-zero; a plain `#anchor` passes | `path-param-session`, `fragment-key-value`, `anchors-ok` |
+| F39 | `--out` is a symlink; the exchange is unavailable and the second rename fails | symlink refused; the fallback restores the old site | `symlink-out-refused`, `fallback-rollback` |
