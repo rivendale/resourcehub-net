@@ -57,13 +57,14 @@ def write_tree(entries, raw=None, sections=("papers", "people", "repos", "demos"
     return d
 
 
-def build(entries_dir, out=None, fault=None):
+def build(entries_dir, out=None, fault=None, umask=None):
     out = out or tempfile.mkdtemp(prefix="rh-out-") + "/site"
     env = {**os.environ, "RH_NOW": NOW}
     if fault:
         env["RH_FAULT"] = fault
     p = subprocess.run([sys.executable, "-I", os.path.join(ROOT, "build.py"), "--entries", entries_dir, "--out", out],
-                       capture_output=True, text=True, env=env)
+                       capture_output=True, text=True, env=env,
+                       preexec_fn=(lambda: os.umask(umask)) if umask is not None else None)
     return p, out
 
 
@@ -160,6 +161,17 @@ expect_fail("share-id-si", mutate("demos", link="https://www.youtube.com/watch?v
 expect_fail("quote-in-url-field", mutate("papers", link='https://example.com/"?token=secret'), "link")
 expect_fail("quote-userinfo", mutate("papers", link='https://example.com"@t.co/x'), "link")
 expect_fail("misplaced-dir", all_valid(), "unexpected", raw={"paper/foo.json": json.dumps(BASE["papers"])})
+expect_fail("impossible-date", mutate("repos", pushed="2026-02-30"), "pushed")
+expect_fail("impossible-month", mutate("papers", date="2026-13"), "date")
+expect_fail("fragment-token", mutate("papers", link="https://app.example.com/#access_token=abc"), "access_token")
+p, _ = build(write_tree(mutate("papers", takeaway="https://arxiv.org/abs/2608.14426 argues takeoff is slower.")))
+check("prose-starting-with-url-ok", p.returncode == 0, p.stderr.strip()[:200])
+d = write_tree([e for e in all_valid() if e["section"] != "papers"], sections=("people", "repos", "demos"))
+open(os.path.join(d, "papers"), "w").write("not a directory")
+p, _ = build(d); check("section-is-a-file", p.returncode != 0 and "papers" in p.stderr, p.stderr.strip()[:160])
+p, out = build(write_tree(all_valid()), umask=0o077)
+modes = {(os.stat(os.path.join(r, n)).st_mode & 0o777) for r, ds, fs in os.walk(out) for n in ds + fs} if p.returncode == 0 else {0}
+check("readable-under-umask-077", p.returncode == 0 and modes <= {0o755, 0o644}, str(sorted(oct(m) for m in modes)))
 expect_fail("stray-file", all_valid(), "unexpected", raw={"papers/notes.txt": "x"})
 p, out = build(write_tree(all_valid()))
 before = snap(out) if p.returncode == 0 else None

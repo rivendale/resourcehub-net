@@ -161,7 +161,7 @@ def url_problems(s, path):
         errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
     if host.endswith("substack.com") and "/redirect/" in u.path:
         errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
-    for k, _ in urllib.parse.parse_qsl(u.query, keep_blank_values=True):
+    for k, _ in urllib.parse.parse_qsl(u.query, keep_blank_values=True) + urllib.parse.parse_qsl(u.fragment, keep_blank_values=True):
         kl = k.lower()
         if kl in TOKEN_KEYS or kl.startswith("utm_") or (host.endswith("substack.com") and kl == "r"):
             errs.append(f"{path}: query key '{k}' can identify a reader; drop it")
@@ -172,14 +172,32 @@ def link_problems(entry, where):
     """Every URL in every string, whole-field or inside prose, meets the same rules."""
     errs = []
     for path, text in strings(entry, where):
-        if re.match(r"^[a-z][a-z0-9+.-]*://", text, re.I):
-            errs += url_problems(text, path)   # a URL field is checked whole, never just a prefix of it
+        if re.match(r"^[a-z][a-z0-9+.-]*://\S*$", text, re.I):
+            errs += url_problems(text, path)   # a URL field (no whitespace) is checked whole, never a prefix of it
             continue
         for m in URL_IN_TEXT.finditer(text):
             url = m.group(0)
             if (m.start(), m.end()) != (0, len(text)):
                 url = url.rstrip(TRAILING)   # a sentence's own punctuation is not part of the link
             errs += url_problems(url, path)
+    return errs
+
+
+DATE_FIELDS = ("added", "date", "pushed", "reviewed_on")
+
+
+def date_problems(entry, where):
+    """The schemas check a date's shape; this checks it is a real calendar date (YYYY, YYYY-MM or YYYY-MM-DD)."""
+    errs = []
+    for k in DATE_FIELDS:
+        v = entry.get(k)
+        if not isinstance(v, str) or not re.fullmatch(r"\d{4}(-\d{2}){0,2}", v, re.ASCII):
+            continue
+        try:
+            parts = [int(x) for x in v.split("-")]
+            datetime.date(parts[0], parts[1] if len(parts) > 1 else 1, parts[2] if len(parts) > 2 else 1)
+        except ValueError:
+            errs.append(f"{where}.{k}: {v!r} is not a real date")
     return errs
 
 
@@ -196,6 +214,8 @@ def load_entries(entries_dir, schemas):
     for sec, _, _ in SECTIONS:
         d = os.path.join(entries_dir, sec)
         if not os.path.isdir(d):
+            if os.path.exists(d):
+                errs.append(f"{sec}: is not a directory")
             continue
         for name in sorted(os.listdir(d)):
             if name == ".gitkeep":
@@ -215,7 +235,7 @@ def load_entries(entries_dir, schemas):
             if e.get("section") != sec:
                 errs.append(f"{path}: section is {e.get('section')!r} but the file is under {sec}/")
                 continue
-            problems = validate(e, schemas[sec], path) + link_problems(e, path)
+            problems = validate(e, schemas[sec], path) + link_problems(e, path) + date_problems(e, path)
             if e.get("id") != name[:-5]:
                 problems.append(f"{path}: id {e.get('id')!r} differs from the file name")
             if isinstance(e.get("added"), str) and re.match(r"^\d{4}-\d{2}-\d{2}$", e["added"]):
@@ -397,6 +417,11 @@ def main():
     os.chmod(tmp, 0o755)   # mkdtemp makes it 0700
     try:
         render(entries, schemas, tmp)
+        for r, ds, fs in os.walk(tmp):   # readable by a web server whatever the builder's umask
+            for n in ds:
+                os.chmod(os.path.join(r, n), 0o755)
+            for n in fs:
+                os.chmod(os.path.join(r, n), 0o644)
     except BaseException:
         shutil.rmtree(tmp, ignore_errors=True)
         raise

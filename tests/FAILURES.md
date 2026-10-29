@@ -36,3 +36,7 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F25 | a URL field holding a quote or angle bracket, which a browser may read as userinfo or a separate token | the whole field is checked as one URL and refused | `quote-in-url-field`, `quote-userinfo` |
 | F26 | an entry in a misspelt section directory, or a stray non-JSON file | exit non-zero: never silently left out | `misplaced-dir`, `stray-file` |
 | F27 | `--entries` exists but holds no section directories | exit non-zero; previous site untouched | `no-section-dirs` |
+| F28 | an impossible calendar date in `date`, `pushed`, `reviewed_on` (2026-02-30, month 13) | exit non-zero | `impossible-date`, `impossible-month` |
+| F29 | the build runs under a restrictive umask (077) | every file 0644 and every dir 0755 | `readable-under-umask-077` |
+| F30 | a section path that is a file, not a directory | exit non-zero | `section-is-a-file` |
+| F31 | prose that begins with a URL; an identifying key in the fragment (`#access_token=`) | prose is scanned as prose; fragment keys meet the query-key rule | `prose-starting-with-url-ok`, `fragment-token` |
