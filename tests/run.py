@@ -4,9 +4,12 @@
 Each case writes an entries tree into a temp dir, runs the real build as a subprocess with RH_NOW
 pinned, and checks the exit status and the files it wrote. Run: python3 tests/run.py
 """
+import atexit
 import copy
+import ctypes
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -40,10 +43,23 @@ BASE = {
 }
 
 results = []
+# Every temp tree lives under one root, removed when the suite exits, however it exits.
+TMP = tempfile.mkdtemp(prefix="rh-tests-")
+atexit.register(shutil.rmtree, TMP, True)
+
+
+def exchange_supported():
+    """Whether renameat2(RENAME_EXCHANGE) works where the tests run (not on NFS or 9p, for example)."""
+    try:
+        fn = ctypes.CDLL(None, use_errno=True).renameat2
+    except (OSError, AttributeError):
+        return False
+    a, b = tempfile.mkdtemp(dir=TMP), tempfile.mkdtemp(dir=TMP)
+    return fn(-100, os.fsencode(a), -100, os.fsencode(b), 2) == 0
 
 
 def write_tree(entries, raw=None, sections=("papers", "people", "repos", "demos")):
-    d = tempfile.mkdtemp(prefix="rh-entries-")
+    d = tempfile.mkdtemp(prefix="rh-entries-", dir=TMP)
     for s_ in sections:   # the real tree always has all four (each with .gitkeep)
         os.makedirs(os.path.join(d, s_), exist_ok=True)
     for e in entries:
@@ -58,7 +74,7 @@ def write_tree(entries, raw=None, sections=("papers", "people", "repos", "demos"
 
 
 def build(entries_dir, out=None, fault=None, umask=None):
-    out = out or tempfile.mkdtemp(prefix="rh-out-") + "/site"
+    out = out or tempfile.mkdtemp(prefix="rh-out-", dir=TMP) + "/site"
     env = {**os.environ, "RH_NOW": NOW}
     if fault:
         env["RH_FAULT"] = fault
@@ -266,7 +282,7 @@ check("stale-removed", p1.returncode == 0 and p2.returncode == 0
       and not os.path.exists(f"{out}/entries/demos/demo-one.json") and os.path.isfile(f"{out}/papers/index.html"))
 
 # F17: never replace a directory the build did not make
-foreign = tempfile.mkdtemp(prefix="rh-foreign-"); open(f"{foreign}/keep.txt", "w").write("x")
+foreign = tempfile.mkdtemp(prefix="rh-foreign-", dir=TMP); open(f"{foreign}/keep.txt", "w").write("x")
 p, _ = build(write_tree(all_valid()), foreign)
 check("refuse-foreign-out", p.returncode != 0 and "previous build" in p.stderr and os.path.isfile(f"{foreign}/keep.txt"), p.stderr.strip()[:160])
 p, out = build(write_tree(all_valid()))
@@ -300,7 +316,7 @@ for point in ("write", "swap"):
 d = write_tree(all_valid()); p1, out = build(d); p2, _ = build(d, out)
 leftover = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
 check("atomic-swap", p1.returncode == 0 and p2.returncode == 0 and not leftover
-      and ("atomic swap" in p2.stdout or sys.platform != "linux"), f"stdout={p2.stdout.strip()[:120]} leftover={leftover}")
+      and ("atomic swap" in p2.stdout) == exchange_supported(), f"stdout={p2.stdout.strip()[:120]} leftover={leftover}")
 # the two-rename fallback (non-Linux, or no RENAME_EXCHANGE) restores the old site if the second rename fails
 d = write_tree(all_valid()); p1, out = build(d)
 before = snap(out) if p1.returncode == 0 else None
@@ -309,7 +325,7 @@ stray = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
 check("fallback-rollback", p1.returncode == 0 and p2.returncode != 0 and snap(out) == before and not stray, f"stray={stray}")
 # a symlinked --out is refused rather than swapped as a link
 real = write_tree(all_valid()); p1, target = build(real)
-link = tempfile.mkdtemp(prefix="rh-link-") + "/site"; os.symlink(target, link)
+link = tempfile.mkdtemp(prefix="rh-link-", dir=TMP) + "/site"; os.symlink(target, link)
 p2, _ = build(real, link)
 check("symlink-out-refused", refused(p2, "symlink") and os.path.islink(link), p2.stderr.strip()[:160])
 
