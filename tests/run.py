@@ -42,8 +42,10 @@ BASE = {
 results = []
 
 
-def write_tree(entries, raw=None):
+def write_tree(entries, raw=None, sections=("papers", "people", "repos", "demos")):
     d = tempfile.mkdtemp(prefix="rh-entries-")
+    for s_ in sections:   # the real tree always has all four (each with .gitkeep)
+        os.makedirs(os.path.join(d, s_), exist_ok=True)
     for e in entries:
         os.makedirs(os.path.join(d, e["section"]), exist_ok=True)
         with open(os.path.join(d, e["section"], e["id"] + ".json"), "w") as f:
@@ -113,7 +115,7 @@ expect_fail("bad-type", mutate("repos", stars_at_review="120"), "stars_at_review
 expect_fail("extra-field", mutate("people", email="someone@example.com"), "email")
 # F5
 es = all_valid(); es[0]["id"] = "other-id"
-d = write_tree([e for e in es if e["section"] != "papers"]); os.makedirs(f"{d}/papers")
+d = write_tree([e for e in es if e["section"] != "papers"]); os.makedirs(f"{d}/papers", exist_ok=True)
 json.dump(es[0], open(f"{d}/papers/ord-2026-intelligence-explosions.json", "w"))
 p, _ = build(d); check("id-mismatch", p.returncode != 0 and "other-id" in p.stderr, p.stderr.strip()[:160])
 dup = copy.deepcopy(BASE["demos"]); dup["id"] = BASE["papers"]["id"]   # valid as a demo; only the id clashes
@@ -155,6 +157,14 @@ expect_fail("bad-port", mutate("papers", link="https://example.com:99999/p"), "p
 expect_fail("click-id-fbclid", mutate("demos", link="https://example.com/v?fbclid=abc"), "fbclid")
 expect_fail("click-id-mc_eid", mutate("demos", link="https://example.com/v?mc_eid=abc"), "mc_eid")
 expect_fail("share-id-si", mutate("demos", link="https://www.youtube.com/watch?v=abc123&si=XyZ"), "'si'")
+expect_fail("quote-in-url-field", mutate("papers", link='https://example.com/"?token=secret'), "link")
+expect_fail("quote-userinfo", mutate("papers", link='https://example.com"@t.co/x'), "link")
+expect_fail("misplaced-dir", all_valid(), "unexpected", raw={"paper/foo.json": json.dumps(BASE["papers"])})
+expect_fail("stray-file", all_valid(), "unexpected", raw={"papers/notes.txt": "x"})
+p, out = build(write_tree(all_valid()))
+before = snap(out) if p.returncode == 0 else None
+p2, _ = build(write_tree([], sections=()), out)
+check("no-section-dirs", p2.returncode != 0 and "section" in p2.stderr and snap(out) == before, p2.stderr.strip()[:160])
 p, out = build(write_tree(all_valid()))
 before = snap(out) if p.returncode == 0 else None
 p2, _ = build("/nonexistent/entries-dir", out)

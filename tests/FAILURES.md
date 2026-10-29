@@ -33,3 +33,6 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F22 | a URL inside prose (a takeaway that cites a link) | checked by the same rules as a URL field | `prose-url-token`, `prose-url-tracker` |
 | F23 | a share or click identifier in any case (`R=`, `fbclid`, `gclid`, `mc_eid`, YouTube `si`), or a port outside 1..65535 | exit non-zero | `substack-R-upper`, `click-id-*`, `share-id-si`, `bad-port` |
 | F24 | `--entries` names a directory that does not exist | exit non-zero; the previous site is untouched (never an empty site over a real one) | `missing-entries-dir` |
+| F25 | a URL field holding a quote or angle bracket, which a browser may read as userinfo or a separate token | the whole field is checked as one URL and refused | `quote-in-url-field`, `quote-userinfo` |
+| F26 | an entry in a misspelt section directory, or a stray non-JSON file | exit non-zero: never silently left out | `misplaced-dir`, `stray-file` |
+| F27 | `--entries` exists but holds no section directories | exit non-zero; previous site untouched | `no-section-dirs` |

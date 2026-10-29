@@ -47,7 +47,7 @@ FORBIDDEN = re.compile("[\x00-\x1f\x7f\ufffe\uffff\ud800-\udfff]")
 # with no whitespace or backslash. Anything else (credentials, a percent-encoded or missing host, a
 # backslash a browser would rewrite) is refused rather than parsed charitably.
 LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
-URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::(?P<port>\d{{1,5}}))?(?P<rest>[/?#][^\s\\]*)?$")
+URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::(?P<port>\d{{1,5}}))?(?P<rest>[/?#][^\s\\\"'<>]*)?$")
 URL_IN_TEXT = re.compile(r"[a-z][a-z0-9+.-]*://[^\s<>\"']+", re.I)   # only scheme:// is a URL; "BERT: ..." is not
 TRAILING = ".,;:!?)]}"
 _writes = 0
@@ -172,6 +172,9 @@ def link_problems(entry, where):
     """Every URL in every string, whole-field or inside prose, meets the same rules."""
     errs = []
     for path, text in strings(entry, where):
+        if re.match(r"^[a-z][a-z0-9+.-]*://", text, re.I):
+            errs += url_problems(text, path)   # a URL field is checked whole, never just a prefix of it
+            continue
         for m in URL_IN_TEXT.finditer(text):
             url = m.group(0)
             if (m.start(), m.end()) != (0, len(text)):
@@ -184,12 +187,21 @@ def link_problems(entry, where):
 
 def load_entries(entries_dir, schemas):
     entries, seen, errs = {s: [] for s, _, _ in SECTIONS}, {}, []
+    known = {s for s, _, _ in SECTIONS}
+    for name in sorted(os.listdir(entries_dir)):   # nothing outside the four sections is silently skipped
+        if name not in known and name != ".gitkeep":
+            errs.append(f"{name}: unexpected entry path; entries live in {', '.join(sorted(known))}/")
+    for sec in sorted(known - set(os.listdir(entries_dir))):
+        errs.append(f"{sec}/: missing section directory (it holds a .gitkeep when empty)")
     for sec, _, _ in SECTIONS:
         d = os.path.join(entries_dir, sec)
         if not os.path.isdir(d):
             continue
         for name in sorted(os.listdir(d)):
-            if not name.endswith(".json"):
+            if name == ".gitkeep":
+                continue
+            if not name.endswith(".json") or not os.path.isfile(os.path.join(d, name)):
+                errs.append(f"{os.path.join(sec, name)}: unexpected entry path; only <id>.json files belong here")
                 continue
             path = os.path.join(sec, name)
             try:
