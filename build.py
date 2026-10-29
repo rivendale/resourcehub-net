@@ -39,6 +39,10 @@ TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly"
 # Query keys that carry a reader's identity: credentials, newsletter recipient ids, ad click ids, share ids.
 TOKEN_KEYS = {"token", "key", "sig", "signature", "auth", "email", "subscriber", "access_token",
               "fbclid", "gclid", "dclid", "msclkid", "mc_eid", "mc_cid", "_hsenc", "_hsmi", "igshid", "si"}
+# Any word of a key (split on non-alphanumerics) that marks it as a credential: api_key, auth_token,
+# client_secret, sessionid... Whole words, so `author` and `keyword` are not caught.
+CREDENTIAL_WORDS = {"token", "secret", "password", "passwd", "pwd", "auth", "session", "sessionid", "sid",
+                    "signature", "sig", "key", "apikey", "credential", "credentials"}
 MARKER = ".resourcehub-build"   # only a directory carrying this is ever replaced
 # JSON allows these, XML 1.0 does not (and entries are single-line text): controls incl. newline and tab,
 # the non-characters U+FFFE/U+FFFF, and lone surrogates.
@@ -103,7 +107,7 @@ def validate(value, schema, where):
     if isinstance(value, str):
         if FORBIDDEN.search(value):
             errs.append(f"{where}: contains a forbidden character (XML 1.0)")
-        if "pattern" in schema and not re.search(schema["pattern"], value):
+        if "pattern" in schema and not re.search(schema["pattern"], value, re.ASCII):   # \d means 0-9 only
             errs.append(f"{where}: {value!r} does not match {schema['pattern']}")
         if len(value) < schema.get("minLength", 0) or len(value) > schema.get("maxLength", 10 ** 9):
             errs.append(f"{where}: length {len(value)} outside {schema.get('minLength', 0)}..{schema.get('maxLength')}")
@@ -161,9 +165,14 @@ def url_problems(s, path):
         errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
     if host.endswith("substack.com") and "/redirect/" in u.path:
         errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
-    for k, _ in urllib.parse.parse_qsl(u.query, keep_blank_values=True) + urllib.parse.parse_qsl(u.fragment, keep_blank_values=True):
+    frag = u.fragment
+    keys = [k for part in (u.query, frag, frag.split("?", 1)[1] if "?" in frag else "")   # #/route?token= too
+            for k, _ in urllib.parse.parse_qsl(part, keep_blank_values=True)]
+    for k in keys:
         kl = k.lower()
-        if kl in TOKEN_KEYS or kl.startswith("utm_") or (host.endswith("substack.com") and kl == "r"):
+        words = set(re.split(r"[^a-z0-9]+", kl))
+        if (kl in TOKEN_KEYS or kl.startswith("utm_") or words & CREDENTIAL_WORDS
+                or (host.endswith("substack.com") and kl == "r")):
             errs.append(f"{path}: query key '{k}' can identify a reader; drop it")
     return errs
 

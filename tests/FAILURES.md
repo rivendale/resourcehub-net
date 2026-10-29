@@ -40,3 +40,6 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F29 | the build runs under a restrictive umask (077) | every file 0644 and every dir 0755 | `readable-under-umask-077` |
 | F30 | a section path that is a file, not a directory | exit non-zero | `section-is-a-file` |
 | F31 | prose that begins with a URL; an identifying key in the fragment (`#access_token=`) | prose is scanned as prose; fragment keys meet the query-key rule | `prose-starting-with-url-ok`, `fragment-token` |
+| F32 | a credential-like query key (api_key, password, auth_token, session, client_secret...), or any key inside a hash route (`#/x?token=`) | exit non-zero | `credential-key-*`, `hash-route-token`, `hash-query-token` |
+| F33 | a date written in non-ASCII digits | exit non-zero: schema patterns match ASCII digits only | `fullwidth-date` |
+| -- | every failure test | passes only on the build's own refusal message, never on a traceback that happens to contain the needle | `refused()` in tests/run.py |

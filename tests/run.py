@@ -88,9 +88,14 @@ def all_valid():
     return [copy.deepcopy(v) for v in BASE.values()]
 
 
+def refused(p, needle):
+    """The build refused on purpose (its own message, no traceback), naming the needle."""
+    return p.returncode != 0 and "refusing" in p.stderr and "Traceback" not in p.stderr and needle in p.stderr
+
+
 def expect_fail(name, entries, needle, raw=None):
     p, _ = build(write_tree(entries, raw))
-    check(name, p.returncode != 0 and needle in (p.stderr + p.stdout), f"rc={p.returncode} err={p.stderr.strip()[:160]}")
+    check(name, refused(p, needle), f"rc={p.returncode} err={p.stderr.strip()[:160]}")
 
 
 def mutate(section, **changes):
@@ -118,14 +123,14 @@ expect_fail("extra-field", mutate("people", email="someone@example.com"), "email
 es = all_valid(); es[0]["id"] = "other-id"
 d = write_tree([e for e in es if e["section"] != "papers"]); os.makedirs(f"{d}/papers", exist_ok=True)
 json.dump(es[0], open(f"{d}/papers/ord-2026-intelligence-explosions.json", "w"))
-p, _ = build(d); check("id-mismatch", p.returncode != 0 and "other-id" in p.stderr, p.stderr.strip()[:160])
+p, _ = build(d); check("id-mismatch", refused(p, "other-id"), p.stderr.strip()[:160])
 dup = copy.deepcopy(BASE["demos"]); dup["id"] = BASE["papers"]["id"]   # valid as a demo; only the id clashes
 d = write_tree(all_valid(), raw={"demos/ord-2026-intelligence-explosions.json": json.dumps(dup)})
-p, _ = build(d); check("dup-id", p.returncode != 0 and "ord-2026-intelligence-explosions" in p.stderr, p.stderr.strip()[:160])
+p, _ = build(d); check("dup-id", refused(p, "also used by"), p.stderr.strip()[:160])
 # F6
 es = all_valid(); wrong = copy.deepcopy(BASE["demos"]); wrong["id"] = "demo-two"
 d = write_tree(es, raw={"people/demo-two.json": json.dumps(wrong)})
-p, _ = build(d); check("wrong-section", p.returncode != 0 and "section" in p.stderr, p.stderr.strip()[:160])
+p, _ = build(d); check("wrong-section", refused(p, "but the file is under"), p.stderr.strip()[:160])
 # F7, F8
 expect_fail("tracker-url", mutate("papers", sources=["https://t.co/abc"]), "t.co")
 expect_fail("substack-redirect", mutate("papers", link="https://example.substack.com/redirect/abc?j=xyz"), "redirect")
@@ -162,13 +167,21 @@ expect_fail("quote-in-url-field", mutate("papers", link='https://example.com/"?t
 expect_fail("quote-userinfo", mutate("papers", link='https://example.com"@t.co/x'), "link")
 expect_fail("misplaced-dir", all_valid(), "unexpected", raw={"paper/foo.json": json.dumps(BASE["papers"])})
 expect_fail("impossible-date", mutate("repos", pushed="2026-02-30"), "pushed")
+expect_fail("fullwidth-date", mutate("repos", pushed="\uff12\uff10\uff12\uff16-\uff11\uff13-\uff14\uff15"), "pushed")
+for key in ("api_key", "password", "auth_token", "session", "client_secret"):
+    expect_fail(f"credential-key-{key}", mutate("papers", link=f"https://example.com/doc?{key}=abc"), key)
+p, _ = build(write_tree(mutate("papers", link="https://example.com/p?author=x&keyword=y&page=2#section-3")))
+check("innocent-keys-ok", p.returncode == 0, p.stderr.strip()[:200])   # whole words: author/keyword are not credentials
+expect_fail("hash-route-token", mutate("papers", link="https://app.example.com/#/reset?token=abc"), "token")
+expect_fail("hash-route-click-id", mutate("demos", link="https://example.com/#/watch?fbclid=abc"), "fbclid")
+expect_fail("hash-query-token", mutate("papers", link="https://app.example.com/#?access_token=abc"), "access_token")
 expect_fail("impossible-month", mutate("papers", date="2026-13"), "date")
 expect_fail("fragment-token", mutate("papers", link="https://app.example.com/#access_token=abc"), "access_token")
 p, _ = build(write_tree(mutate("papers", takeaway="https://arxiv.org/abs/2608.14426 argues takeoff is slower.")))
 check("prose-starting-with-url-ok", p.returncode == 0, p.stderr.strip()[:200])
 d = write_tree([e for e in all_valid() if e["section"] != "papers"], sections=("people", "repos", "demos"))
 open(os.path.join(d, "papers"), "w").write("not a directory")
-p, _ = build(d); check("section-is-a-file", p.returncode != 0 and "papers" in p.stderr, p.stderr.strip()[:160])
+p, _ = build(d); check("section-is-a-file", refused(p, "is not a directory"), p.stderr.strip()[:160])
 p, out = build(write_tree(all_valid()), umask=0o077)
 modes = {(os.stat(os.path.join(r, n)).st_mode & 0o777) for r, ds, fs in os.walk(out) for n in ds + fs} if p.returncode == 0 else {0}
 check("readable-under-umask-077", p.returncode == 0 and modes <= {0o755, 0o644}, str(sorted(oct(m) for m in modes)))
@@ -176,7 +189,7 @@ expect_fail("stray-file", all_valid(), "unexpected", raw={"papers/notes.txt": "x
 p, out = build(write_tree(all_valid()))
 before = snap(out) if p.returncode == 0 else None
 p2, _ = build(write_tree([], sections=()), out)
-check("no-section-dirs", p2.returncode != 0 and "section" in p2.stderr and snap(out) == before, p2.stderr.strip()[:160])
+check("no-section-dirs", refused(p2, "missing section directory") and snap(out) == before, p2.stderr.strip()[:160])
 p, out = build(write_tree(all_valid()))
 before = snap(out) if p.returncode == 0 else None
 p2, _ = build("/nonexistent/entries-dir", out)
