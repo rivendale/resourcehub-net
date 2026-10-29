@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://resourcehub.net/schemas/repos.schema.json",
+  "title": "resourcehub.net repos entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "repo",
+    "url",
+    "license",
+    "language",
+    "stars_at_review",
+    "pushed",
+    "what_it_is",
+    "reviewed",
+    "focus",
+    "focus_reason",
+    "measured_against",
+    "reviewed_on"
+  ],
+  "properties": {
+    "repo": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "url": {
+      "type": "string",
+      "pattern": "^https://[^\\s]+$"
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "language": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "stars_at_review": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pushed": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "what_it_is": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600
+    },
+    "reviewed": {
+      "const": true
+    },
+    "focus": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "How much attention it earns against the stated need; not praise."
+    },
+    "focus_reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800
+    },
+    "measured_against": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400
+    },
+    "reviewed_on": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+  }
+}

@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+"""End-to-end tests for build.py, one or more per row of tests/FAILURES.md. Written before build.py.
+
+Each case writes an entries tree into a temp dir, runs the real build as a subprocess with RH_NOW
+pinned, and checks the exit status and the files it wrote. Run: python3 tests/run.py
+"""
+import copy
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import xml.etree.ElementTree as ET
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+NOW = "2026-10-29T12:00:00Z"
+
+BASE = {
+    "papers": {"id": "ord-2026-intelligence-explosions", "section": "papers", "added": "2026-10-29",
+               "reviewed_by": "laptop", "sources": ["https://arxiv.org/abs/2608.14426"], "agent_written": True,
+               "title": "The Dynamics of Intelligence Explosions", "authors": ["Toby Ord"], "date": "2026-08-14",
+               "link": "https://arxiv.org/abs/2608.14426", "takeaway": "A runaway takeoff is harder to reach than assumed.",
+               "why_it_matters": "Generation time emerges as a key variable.", "key_result": "Singular growth needs strict conditions.",
+               "publication": "preprint", "claim": "verified", "code": None, "tags": ["ai-forecasting"]},
+    "people": {"id": "ethan-mollick", "section": "people", "added": "2026-10-28", "reviewed_by": "laptop",
+               "sources": ["https://www.oneusefulthing.org/"], "agent_written": True, "name": "Ethan Mollick",
+               "affiliation": "Wharton", "focus": "AI at work and in education",
+               "links": {"newsletter": "https://www.oneusefulthing.org/"},
+               "start_here": ["https://www.oneusefulthing.org/"], "why": "Practical, tested use of AI tools."},
+    "repos": {"id": "example-tool", "section": "repos", "added": "2026-10-27", "reviewed_by": "laptop",
+              "sources": ["https://github.com/example/tool"], "agent_written": True, "repo": "example/tool",
+              "url": "https://github.com/example/tool", "license": "MIT", "language": "Python", "stars_at_review": 120,
+              "pushed": "2026-10-01", "what_it_is": "A small CLI.", "reviewed": True, "focus": "low",
+              "focus_reason": "Duplicates a tool already in use.", "measured_against": "A stated need for X.",
+              "reviewed_on": "2026-10-27"},
+    "demos": {"id": "demo-one", "section": "demos", "added": "2026-10-26", "reviewed_by": "laptop",
+              "sources": ["https://www.youtube.com/watch?v=abc123"], "agent_written": False, "date": "2026-10-20",
+              "title": "A demo", "link": "https://www.youtube.com/watch?v=abc123", "what_it_shows": "A capability.",
+              "model_or_system": "Some model", "capability_tag": "coding", "claim": "opinion"},
+}
+
+results = []
+
+
+def write_tree(entries, raw=None):
+    d = tempfile.mkdtemp(prefix="rh-entries-")
+    for e in entries:
+        os.makedirs(os.path.join(d, e["section"]), exist_ok=True)
+        with open(os.path.join(d, e["section"], e["id"] + ".json"), "w") as f:
+            json.dump(e, f)
+    for path, text in (raw or {}).items():
+        os.makedirs(os.path.dirname(os.path.join(d, path)), exist_ok=True)
+        with open(os.path.join(d, path), "w") as f:
+            f.write(text)
+    return d
+
+
+def build(entries_dir, out=None):
+    out = out or tempfile.mkdtemp(prefix="rh-out-") + "/site"
+    p = subprocess.run([sys.executable, "-I", os.path.join(ROOT, "build.py"), "--entries", entries_dir, "--out", out],
+                       capture_output=True, text=True, env={**os.environ, "RH_NOW": NOW})
+    return p, out
+
+
+def read(path):
+    """A missing output reads as empty, so the check fails instead of crashing the run."""
+    try:
+        return open(path, encoding="utf-8").read()
+    except OSError:
+        return ""
+
+
+def check(name, cond, detail=""):
+    results.append((name, bool(cond), detail))
+
+
+def all_valid():
+    return [copy.deepcopy(v) for v in BASE.values()]
+
+
+def expect_fail(name, entries, needle, raw=None):
+    p, _ = build(write_tree(entries, raw))
+    check(name, p.returncode != 0 and needle in (p.stderr + p.stdout), f"rc={p.returncode} err={p.stderr.strip()[:160]}")
+
+
+def mutate(section, **changes):
+    es = all_valid()
+    for e in es:
+        if e["section"] == section:
+            for k, v in changes.items():
+                if v is KeyError:
+                    e.pop(k)
+                else:
+                    e[k] = v
+    return es
+
+
+# F1
+expect_fail("bad-json", all_valid(), "not valid JSON", raw={"papers/broken.json": "{not json"})
+# F2
+expect_fail("missing-field", mutate("papers", takeaway=KeyError), "takeaway")
+# F3
+expect_fail("bad-enum", mutate("papers", claim="likely"), "claim")
+expect_fail("bad-type", mutate("repos", stars_at_review="120"), "stars_at_review")
+# F4
+expect_fail("extra-field", mutate("people", email="someone@example.com"), "email")
+# F5
+es = all_valid(); es[0]["id"] = "other-id"
+d = write_tree([e for e in es if e["section"] != "papers"]); os.makedirs(f"{d}/papers")
+json.dump(es[0], open(f"{d}/papers/ord-2026-intelligence-explosions.json", "w"))
+p, _ = build(d); check("id-mismatch", p.returncode != 0 and "other-id" in p.stderr, p.stderr.strip()[:160])
+dup = copy.deepcopy(BASE["papers"]); dup["section"] = "demos"
+d = write_tree(all_valid(), raw={"demos/ord-2026-intelligence-explosions.json": json.dumps(dup)})
+p, _ = build(d); check("dup-id", p.returncode != 0 and "ord-2026-intelligence-explosions" in p.stderr, p.stderr.strip()[:160])
+# F6
+es = all_valid(); wrong = copy.deepcopy(BASE["demos"]); wrong["id"] = "demo-two"
+d = write_tree(es, raw={"people/demo-two.json": json.dumps(wrong)})
+p, _ = build(d); check("wrong-section", p.returncode != 0 and "section" in p.stderr, p.stderr.strip()[:160])
+# F7, F8
+expect_fail("tracker-url", mutate("papers", sources=["https://t.co/abc"]), "t.co")
+expect_fail("substack-redirect", mutate("papers", link="https://example.substack.com/redirect/abc?j=xyz"), "redirect")
+expect_fail("http-url", mutate("papers", link="http://arxiv.org/abs/2608.14426"), "link")
+expect_fail("token-url", mutate("people", start_here=["https://example.com/post?token=abc"]), "token")
+expect_fail("utm-url", mutate("demos", link="https://example.com/v?utm_source=x"), "utm_source")
+# F12
+expect_fail("future-date", mutate("demos", added="2026-11-30"), "future")
+expect_fail("bad-date", mutate("demos", added="2026/10/26"), "added")
+
+# F9, F13, F14, F16: a good build
+es = all_valid(); es[0]["takeaway"] = "<script>alert(1)</script> & more"
+p, out = build(write_tree(es))
+check("good-build", p.returncode == 0, p.stderr.strip()[:200])
+try:
+    page = open(f"{out}/papers/index.html").read()
+    check("html-escaped", "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page)
+    idx = json.load(open(f"{out}/index.json"))
+    ids = {e["id"] for e in idx["entries"]}
+    check("all-outputs:index", ids == {e["id"] for e in es}, str(ids))
+    llms, full = open(f"{out}/llms.txt").read(), open(f"{out}/llms-full.txt").read()
+    feed = ET.parse(f"{out}/feed.xml").getroot()
+    items = feed.findall("./channel/item")
+    for e in es:
+        check(f"all-outputs:{e['id']}",
+              os.path.isfile(f"{out}/entries/{e['section']}/{e['id']}.json")
+              and e["id"] in open(f"{out}/{e['section']}/index.html").read()
+              and f"/entries/{e['section']}/{e['id']}.json" in llms and e["id"] in full
+              and any(e["id"] in (i.findtext("guid") or "") for i in items))
+    dates = [i.findtext("pubDate") for i in items]
+    check("feed-newest-first", [i.findtext("guid") for i in items][0].endswith("ord-2026-intelligence-explosions.json"), str(dates))
+    check("no-cname", not os.path.exists(f"{out}/CNAME"))
+    bad = [f for r, _, fs in os.walk(out) for f in fs if f.endswith(".html")
+           and ("http://localhost" in open(os.path.join(r, f)).read() or 'href="file:' in open(os.path.join(r, f)).read())]
+    check("root-relative", not bad, str(bad))
+    for s in ("papers", "people", "repos", "demos"):
+        sch = json.load(open(f"{out}/schemas/{s}.schema.json"))
+        check(f"merged-schema:{s}", "id" in sch["properties"] and "added" in sch["required"])
+except Exception as x:  # a missing output must read as a failure, not crash the run
+    check("good-build:outputs", False, repr(x)[:200])
+
+# F10
+p, out = build(write_tree([copy.deepcopy(BASE["papers"])]))
+check("empty-section", p.returncode == 0 and "No entries yet" in read(f"{out}/demos/index.html"), p.stderr.strip()[:160])
+
+# F11
+d_good, d_bad = write_tree(all_valid()), write_tree(mutate("papers", claim="likely"))
+p1, out = build(d_good)
+before = {f: open(os.path.join(r, f), "rb").read() for r, _, fs in os.walk(out) for f in fs} if p1.returncode == 0 else None
+p2, _ = build(d_bad, out)
+after = {f: open(os.path.join(r, f), "rb").read() for r, _, fs in os.walk(out) for f in fs} if os.path.isdir(out) else None
+check("no-partial", p1.returncode == 0 and p2.returncode != 0 and before == after)
+
+# F11b: a rebuild into an existing site drops an entry that was removed (no stale files)
+d1 = write_tree(all_valid())
+d2 = write_tree([e for e in all_valid() if e["section"] != "demos"])
+p1, out = build(d1); p2, _ = build(d2, out)
+check("stale-removed", p1.returncode == 0 and p2.returncode == 0
+      and not os.path.exists(f"{out}/entries/demos/demo-one.json") and os.path.isfile(f"{out}/papers/index.html"))
+
+# F15
+d = write_tree(all_valid())
+p1, o1 = build(d); p2, o2 = build(d)
+def snapshot(o):
+    return {os.path.relpath(os.path.join(r, f), o): open(os.path.join(r, f), "rb").read() for r, _, fs in os.walk(o) for f in fs}
+check("deterministic", p1.returncode == 0 and p2.returncode == 0 and snapshot(o1) == snapshot(o2))
+
+failed = [r for r in results if not r[1]]
+for name, ok, detail in results:
+    print(("ok   " if ok else "FAIL ") + name + ("" if ok else f"  {detail}"))
+print(f"{len(results) - len(failed)}/{len(results)} passed")
+sys.exit(1 if failed else 0)
