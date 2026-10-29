@@ -73,6 +73,10 @@ def read(path):
         return ""
 
 
+def snap(o):
+    return {os.path.relpath(os.path.join(r, f), o): open(os.path.join(r, f), "rb").read() for r, _, fs in os.walk(o) for f in fs}
+
+
 def check(name, cond, detail=""):
     results.append((name, bool(cond), detail))
 
@@ -141,6 +145,20 @@ expect_fail("xml-nonchar", mutate("papers", takeaway="x\uffff"), "forbidden char
 lone = json.dumps(BASE["papers"]).replace('"A runaway takeoff', '"\\ud800 A runaway takeoff')
 expect_fail("lone-surrogate", [e for e in all_valid() if e["section"] != "papers"], "forbidden character",
             raw={f"papers/{BASE['papers']['id']}.json": lone})
+p, _ = build(write_tree(mutate("papers", title="BERT: Pre-training of Deep Bidirectional Transformers vs Qwen2:7B",
+                                 takeaway="Caveat: see https://arxiv.org/abs/1810.04805 or the mirror at https://arxiv.org.")))
+check("colon-and-prose-url-ok", p.returncode == 0, p.stderr.strip()[:200])   # a word with a colon is not a URL
+expect_fail("prose-url-token", mutate("papers", takeaway="Read https://example.com/post?token=abc first"), "token")
+expect_fail("prose-url-tracker", mutate("people", why="Mostly posts via https://t.co/xyz links"), "t.co")
+expect_fail("substack-R-upper", mutate("papers", link="https://x.substack.com/p/post?R=1abcd"), "'R'")
+expect_fail("bad-port", mutate("papers", link="https://example.com:99999/p"), "port")
+expect_fail("click-id-fbclid", mutate("demos", link="https://example.com/v?fbclid=abc"), "fbclid")
+expect_fail("click-id-mc_eid", mutate("demos", link="https://example.com/v?mc_eid=abc"), "mc_eid")
+expect_fail("share-id-si", mutate("demos", link="https://www.youtube.com/watch?v=abc123&si=XyZ"), "'si'")
+p, out = build(write_tree(all_valid()))
+before = snap(out) if p.returncode == 0 else None
+p2, _ = build("/nonexistent/entries-dir", out)
+check("missing-entries-dir", p2.returncode != 0 and "entries" in p2.stderr and snap(out) == before, p2.stderr.strip()[:160])
 p, _ = build(write_tree(mutate("demos", added="2026-10-30")))
 check("added-tomorrow-ok", p.returncode == 0, p.stderr.strip()[:160])   # one day of slack for authors east of UTC
 expect_fail("future-date", mutate("demos", added="2026-11-30"), "future")
@@ -186,7 +204,6 @@ check("empty-section", p.returncode == 0 and "No entries yet" in read(f"{out}/de
 # F11
 d_good, d_bad = write_tree(all_valid()), write_tree(mutate("papers", claim="likely"))
 p1, out = build(d_good)
-snap = lambda o: {os.path.relpath(os.path.join(r, f), o): open(os.path.join(r, f), "rb").read() for r, _, fs in os.walk(o) for f in fs}
 before = snap(out) if p1.returncode == 0 else None
 p2, _ = build(d_bad, out)
 after = snap(out) if os.path.isdir(out) else None

@@ -29,3 +29,7 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F19 | text with a character XML 1.0 forbids (controls incl. newline, U+FFFE/U+FFFF, lone surrogates) | exit non-zero, so feed.xml always parses | `trailing-newline`, `xml-nonchar`, `lone-surrogate` |
 | F20 | `added` is today somewhere east of UTC | accepted: one day of slack; further ahead fails | `added-tomorrow-ok`, `future-date` |
 | F11c | a failure while writing files, or between moving the old site aside and the new one in | the old site is restored whole; no stray temp dirs | `fault-write`, `fault-swap` |
+| F21 | a title or sentence that starts with a word and a colon ("BERT: ...") | accepted: only `scheme://` is a URL | `colon-and-prose-url-ok` |
+| F22 | a URL inside prose (a takeaway that cites a link) | checked by the same rules as a URL field | `prose-url-token`, `prose-url-tracker` |
+| F23 | a share or click identifier in any case (`R=`, `fbclid`, `gclid`, `mc_eid`, YouTube `si`), or a port outside 1..65535 | exit non-zero | `substack-R-upper`, `click-id-*`, `share-id-si`, `bad-port` |
+| F24 | `--entries` names a directory that does not exist | exit non-zero; the previous site is untouched (never an empty site over a real one) | `missing-entries-dir` |

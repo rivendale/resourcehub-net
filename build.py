@@ -36,7 +36,9 @@ SECTIONS = [
     ("demos", "Demos", "Dated demonstrations of what AI systems can do, as a record of progress."),
 ]
 TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly", "tinyurl.com", "goo.gl"}
-TOKEN_KEYS = {"token", "key", "sig", "signature", "auth", "email", "subscriber", "access_token"}
+# Query keys that carry a reader's identity: credentials, newsletter recipient ids, ad click ids, share ids.
+TOKEN_KEYS = {"token", "key", "sig", "signature", "auth", "email", "subscriber", "access_token",
+              "fbclid", "gclid", "dclid", "msclkid", "mc_eid", "mc_cid", "_hsenc", "_hsmi", "igshid", "si"}
 MARKER = ".resourcehub-build"   # only a directory carrying this is ever replaced
 # JSON allows these, XML 1.0 does not (and entries are single-line text): controls incl. newline and tab,
 # the non-characters U+FFFE/U+FFFF, and lone surrogates.
@@ -45,7 +47,9 @@ FORBIDDEN = re.compile("[\x00-\x1f\x7f\ufffe\uffff\ud800-\udfff]")
 # with no whitespace or backslash. Anything else (credentials, a percent-encoded or missing host, a
 # backslash a browser would rewrite) is refused rather than parsed charitably.
 LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
-URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::\d{{1,5}})?(?P<rest>[/?#][^\s\\]*)?$")
+URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::(?P<port>\d{{1,5}}))?(?P<rest>[/?#][^\s\\]*)?$")
+URL_IN_TEXT = re.compile(r"[a-z][a-z0-9+.-]*://[^\s<>\"']+", re.I)   # only scheme:// is a URL; "BERT: ..." is not
+TRAILING = ".,;:!?)]}"
 _writes = 0
 
 
@@ -140,30 +144,39 @@ def strings(value, where):
             yield from strings(v, f"{where}.{k}")
 
 
-def link_problems(entry, where):
+def url_problems(s, path):
+    if not s.lower().startswith("https://"):
+        return [f"{path}: {s!r} is not https"]
+    if "@" in re.split(r"[/?#]", s[len("https://"):], maxsplit=1)[0]:
+        return [f"{path}: the URL embeds credentials (user@ or user:pass@); never publish them"]
+    m = URL_RE.match(s)
+    if not m:
+        return [f"{path}: {s!r} is not a plain https URL with an ASCII host"]
     errs = []
-    for path, s in strings(entry, where):
-        if not re.match(r"^[a-z][a-z0-9+.-]*:", s, re.I):
-            continue
-        if not s.lower().startswith("https://"):
-            errs.append(f"{path}: {s!r} is not https")
-            continue
-        if "@" in re.split(r"[/?#]", s[len("https://"):], maxsplit=1)[0]:
-            errs.append(f"{path}: the URL embeds credentials (user@ or user:pass@); never publish them")
-            continue
-        m = URL_RE.match(s)
-        if not m:
-            errs.append(f"{path}: {s!r} is not a plain https URL with an ASCII host")
-            continue
-        host = m.group("host").lower()
-        u = urllib.parse.urlsplit(s)
-        if any(host == t or host.endswith("." + t) for t in TRACKER_HOSTS):
-            errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
-        if host.endswith("substack.com") and "/redirect/" in u.path:
-            errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
-        for k, _ in urllib.parse.parse_qsl(u.query, keep_blank_values=True):
-            if k.lower() in TOKEN_KEYS or k.lower().startswith("utm_") or (host.endswith("substack.com") and k == "r"):
-                errs.append(f"{path}: query key '{k}' can carry a reader's identity; drop it")
+    if m.group("port") and not 1 <= int(m.group("port")) <= 65535:
+        errs.append(f"{path}: port {m.group('port')} is outside 1..65535")
+    host = m.group("host").lower()
+    u = urllib.parse.urlsplit(s)
+    if any(host == t or host.endswith("." + t) for t in TRACKER_HOSTS):
+        errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
+    if host.endswith("substack.com") and "/redirect/" in u.path:
+        errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
+    for k, _ in urllib.parse.parse_qsl(u.query, keep_blank_values=True):
+        kl = k.lower()
+        if kl in TOKEN_KEYS or kl.startswith("utm_") or (host.endswith("substack.com") and kl == "r"):
+            errs.append(f"{path}: query key '{k}' can identify a reader; drop it")
+    return errs
+
+
+def link_problems(entry, where):
+    """Every URL in every string, whole-field or inside prose, meets the same rules."""
+    errs = []
+    for path, text in strings(entry, where):
+        for m in URL_IN_TEXT.finditer(text):
+            url = m.group(0)
+            if (m.start(), m.end()) != (0, len(text)):
+                url = url.rstrip(TRAILING)   # a sentence's own punctuation is not part of the link
+            errs += url_problems(url, path)
     return errs
 
 
@@ -359,6 +372,8 @@ def main():
     ap.add_argument("--schemas", default=os.path.join(ROOT, "schemas"))
     ap.add_argument("--out", default=os.path.join(ROOT, "site"))
     a = ap.parse_args()
+    if not os.path.isdir(a.entries):
+        die(f"entries directory {a.entries} does not exist; refusing to publish an empty site over the real one")
     schemas = load_schemas(a.schemas)
     entries = load_entries(a.entries, schemas)
     out = os.path.abspath(a.out)
