@@ -52,8 +52,8 @@ LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
 URL_RE = re.compile(rf"^https://(?P<host>{LABEL}(?:\.{LABEL})+)(?::(?P<port>[0-9]{{1,5}}))?(?P<rest>[/?#][^\s\\\"'<>]*)?$")
 # Only scheme:// is a URL ("BERT: ..." is not). It ends at an ASCII space, so a non-breaking space inside it
 # stays part of the candidate and URL_RE refuses the whole thing.
-URL_IN_TEXT = re.compile(r"[a-z][a-z0-9+.-]*://[^ <>\"']+", re.I)
-TRAILING = ".,;:!?)]}"
+URL_IN_TEXT = re.compile(r"[a-z][a-z0-9+.-]*://[^ ]+", re.I)
+TRAILING = ".,;:!?)]}\"'>"   # sentence punctuation and quotes/brackets around a URL, stripped from its end only
 _writes = 0
 
 
@@ -163,11 +163,12 @@ def url_problems(s, path):
     u = urllib.parse.urlsplit(s)
     if any(host == t or host.endswith("." + t) for t in TRACKER_HOSTS):
         errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
-    if host.endswith("substack.com") and "/redirect/" in u.path:
+    dpath, dfrag = urllib.parse.unquote(u.path), urllib.parse.unquote(u.fragment)   # %64 is d, %3B is ;
+    if host.endswith("substack.com") and "/redirect/" in dpath:
         errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
-    if re.search(r";[^/]*=", u.path):
+    if re.search(r";[^/]*=", dpath):
         errs.append(f"{path}: a path parameter (;name=value, e.g. ;jsessionid=) can carry a session; drop it")
-    if any(c in u.fragment for c in "=?&"):
+    if any(c in dfrag for c in "=?&"):
         errs.append(f"{path}: the fragment {u.fragment!r} carries data, not just an anchor; drop it")
     for seg in re.split(r"[&;]", u.query):
         k = urllib.parse.unquote_plus(seg.split("=", 1)[0])
@@ -416,7 +417,7 @@ def exchange(a, b):
     try:
         import ctypes
         fn = ctypes.CDLL(None, use_errno=True).renameat2
-    except (ImportError, OSError, AttributeError):   # no ctypes, no libc symbol: fall back
+    except Exception:   # no ctypes, no libc symbol, or CDLL(None) unsupported (Windows): fall back
         return False
     if fn(-100, os.fsencode(a), -100, os.fsencode(b), 2) == 0:   # AT_FDCWD, RENAME_EXCHANGE
         return True
@@ -468,7 +469,13 @@ def main():
     old = None
     if os.path.exists(out):
         old = tempfile.mkdtemp(prefix=".site-old-", dir=parent)
-        os.rename(out, os.path.join(old, "site"))
+        try:
+            fault("fallback-aside")
+            os.rename(out, os.path.join(old, "site"))
+        except BaseException:   # the old site never moved: drop the scaffolding and leave it be
+            shutil.rmtree(old, ignore_errors=True)
+            shutil.rmtree(tmp, ignore_errors=True)
+            raise
     try:
         fault("fallback-rename")
         os.rename(tmp, out)

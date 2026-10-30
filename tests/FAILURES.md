@@ -50,3 +50,5 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F37 | a query key not on the allow-list (any spelling: authToken, clientSecret, PHPSESSID, a custom-domain substack's r) | exit non-zero: only allow-listed keys (build.py ALLOWED_QUERY_KEYS) are published; a blocklist never converged | `unlisted-key-*`, `custom-domain-substack-r`, `allowed-keys-ok` |
 | F38 | a path parameter (`;jsessionid=`) or a key=value fragment (`#state=`) | exit non-zero; a plain `#anchor` passes | `path-param-session`, `fragment-key-value`, `anchors-ok` |
 | F39 | `--out` is a symlink; the exchange is unavailable and the second rename fails | symlink refused; the fallback restores the old site | `symlink-out-refused`, `fallback-rollback` |
+| F40 | a percent-encoded path hiding a redirect or a path parameter; a prose URL with a quote or bracket inside it | exit non-zero; quotes or brackets around a URL are just punctuation | `pct-redirect`, `pct-path-param`, `prose-quote-token`, `quoted-prose-url-ok` |
+| F41 | the fallback fails while moving the old site aside | the old site stays; no stray temp dirs | `fallback-aside-cleanup` |

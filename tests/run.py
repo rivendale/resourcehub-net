@@ -203,6 +203,11 @@ check("anchors-ok", p.returncode == 0, p.stderr.strip()[:200])   # an anchor is 
 expect_fail("subscriber-id", mutate("papers", link="https://example.com/post?ck_subscriber_id=12345"), "ck_subscriber_id")
 expect_fail("user-email", mutate("papers", link="https://example.com/post?user_email=a"), "user_email")
 expect_fail("prose-nbsp-url", mutate("papers", takeaway="Read https://example.com/post\u00a0?token=abc first"), "takeaway")
+expect_fail("pct-redirect", mutate("papers", link="https://x.substack.com/re%64irect/token"), "redirect")
+expect_fail("pct-path-param", mutate("papers", link="https://example.com/doc%3Bjsessionid=secret"), "path parameter")
+expect_fail("prose-quote-token", mutate("papers", takeaway='Read https://example.com/path"?access_token=secret first'), "takeaway")
+p, _ = build(write_tree(mutate("papers", takeaway='The paper ("https://arxiv.org/abs/2608.14426") and <https://arxiv.org/abs/1810.04805>.')))
+check("quoted-prose-url-ok", p.returncode == 0, p.stderr.strip()[:200])   # quotes and brackets around a URL are punctuation
 expect_fail("hash-route-click-id", mutate("demos", link="https://example.com/#/watch?fbclid=abc"), "fbclid")
 expect_fail("hash-query-token", mutate("papers", link="https://app.example.com/#?access_token=abc"), "access_token")
 expect_fail("impossible-month", mutate("papers", date="2026-13"), "date")
@@ -323,6 +328,12 @@ before = snap(out) if p1.returncode == 0 else None
 p2, _ = build(d, out, fault="fallback-rename")
 stray = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
 check("fallback-rollback", p1.returncode == 0 and p2.returncode != 0 and snap(out) == before and not stray, f"stray={stray}")
+# ...and leaves nothing behind if moving the old site aside fails
+d = write_tree(all_valid()); p1, out = build(d)
+before = snap(out) if p1.returncode == 0 else None
+p2, _ = build(d, out, fault="fallback-aside")
+stray = [n for n in os.listdir(os.path.dirname(out)) if n.startswith(".site")]
+check("fallback-aside-cleanup", p1.returncode == 0 and p2.returncode != 0 and snap(out) == before and not stray, f"stray={stray}")
 # a symlinked --out is refused rather than swapped as a link
 real = write_tree(all_valid()); p1, target = build(real)
 link = tempfile.mkdtemp(prefix="rh-link-", dir=TMP) + "/site"; os.symlink(target, link)
