@@ -208,6 +208,13 @@ expect_fail("pct-path-param", mutate("papers", link="https://example.com/doc%3Bj
 expect_fail("prose-quote-token", mutate("papers", takeaway='Read https://example.com/path"?access_token=secret first'), "takeaway")
 p, _ = build(write_tree(mutate("papers", takeaway='The paper ("https://arxiv.org/abs/2608.14426") and <https://arxiv.org/abs/1810.04805>.')))
 check("quoted-prose-url-ok", p.returncode == 0, p.stderr.strip()[:200])   # quotes and brackets around a URL are punctuation
+p, _ = build(write_tree(mutate("people", links={"scholar": "https://scholar.google.com/citations?user=abc123&hl=en"})))
+check("scholar-user-ok", p.returncode == 0, p.stderr.strip()[:200])   # user= is allowed on Google Scholar
+expect_fail("x-share-t", mutate("people", links={"x": "https://x.com/someone/status/1?t=AbCdEfGh"}), "'t'")
+expect_fail("user-off-scholar", mutate("papers", link="https://example.com/p?user=reader42"), "'user'")
+bad_id = copy.deepcopy(BASE["papers"]); bad_id["id"] = ["x"]
+expect_fail("unhashable-id", [e for e in all_valid() if e["section"] != "papers"], "id",
+            raw={"papers/x.json": json.dumps(bad_id)})
 expect_fail("hash-route-click-id", mutate("demos", link="https://example.com/#/watch?fbclid=abc"), "fbclid")
 expect_fail("hash-query-token", mutate("papers", link="https://app.example.com/#?access_token=abc"), "access_token")
 expect_fail("impossible-month", mutate("papers", date="2026-13"), "date")

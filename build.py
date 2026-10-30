@@ -40,7 +40,10 @@ TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly"
 # Query keys a published link may carry. An allow-list, because nine review rounds showed a blocklist of
 # identifying keys never converges (authToken, PHPSESSID, ck_subscriber_id, a custom-domain substack's r...).
 # Any other key is refused: link the clean URL, or add the key here after checking it cannot identify a reader.
-ALLOWED_QUERY_KEYS = {"v", "t", "list", "index", "id", "p", "page", "q", "lang", "hl", "tab"}
+ALLOWED_QUERY_KEYS = {"id", "p", "page", "q", "lang", "hl", "tab"}
+# Keys that are harmless only on particular hosts (and their subdomains): YouTube's t is a timestamp, but X's t
+# is a share-tracking token; Scholar's user names the profile's subject, not the reader.
+HOST_QUERY_KEYS = {"youtube.com": {"v", "t", "list", "index"}, "youtu.be": {"t"}, "scholar.google.com": {"user"}}
 MARKER = ".resourcehub-build"   # only a directory carrying this is ever replaced
 # JSON allows these, XML 1.0 does not (and entries are single-line text): controls incl. newline and tab,
 # the non-characters U+FFFE/U+FFFF, and lone surrogates.
@@ -170,9 +173,11 @@ def url_problems(s, path):
         errs.append(f"{path}: a path parameter (;name=value, e.g. ;jsessionid=) can carry a session; drop it")
     if any(c in dfrag for c in "=?&"):
         errs.append(f"{path}: the fragment {u.fragment!r} carries data, not just an anchor; drop it")
+    allowed = ALLOWED_QUERY_KEYS.union(*(keys for h, keys in HOST_QUERY_KEYS.items()
+                                         if host == h or host.endswith("." + h)))
     for seg in re.split(r"[&;]", u.query):
         k = urllib.parse.unquote_plus(seg.split("=", 1)[0])
-        if seg and k not in ALLOWED_QUERY_KEYS:
+        if seg and k not in allowed:
             errs.append(f"{path}: query key '{k}' is not allow-listed (ALLOWED_QUERY_KEYS); link the clean URL")
     return errs
 
@@ -247,8 +252,9 @@ def load_entries(entries_dir, schemas):
                 errs.append(f"{path}: section is {e.get('section')!r} but the file is under {sec}/")
                 continue
             problems = validate(e, schemas[sec], path) + link_problems(e, path) + date_problems(e, path)
-            if e.get("id") != name[:-5]:
-                problems.append(f"{path}: id {e.get('id')!r} differs from the file name")
+            eid = e.get("id") if isinstance(e.get("id"), str) else None   # validate() already reported a bad type
+            if eid is not None and eid != name[:-5]:
+                problems.append(f"{path}: id {eid!r} differs from the file name")
             if isinstance(e.get("added"), str) and re.match(r"^\d{4}-\d{2}-\d{2}$", e["added"]):
                 try:
                     # One day of slack: an author east of UTC writes today's date before UTC does.
@@ -256,9 +262,10 @@ def load_entries(entries_dir, schemas):
                         problems.append(f"{path}: added {e['added']} is in the future")
                 except ValueError:
                     problems.append(f"{path}: added {e['added']!r} is not a real date")
-            if e.get("id") in seen:
-                problems.append(f"{path}: id {e['id']!r} is also used by {seen[e['id']]}")
-            seen.setdefault(e.get("id"), path)
+            if eid is not None and eid in seen:
+                problems.append(f"{path}: id {eid!r} is also used by {seen[eid]}")
+            if eid is not None:
+                seen.setdefault(eid, path)
             if problems:
                 errs += problems
             else:

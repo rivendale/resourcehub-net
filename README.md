@@ -24,7 +24,8 @@ demos. Built for people and for agents: every entry is also JSON, with `index.js
 - Repo reviews show **Reviewed** with a `focus` of `high`, `medium` or `low` against a stated need,
   not praise or a recommendation.
 - Links are plain https URLs pointing at the primary source. A query string may carry only
-  allow-listed keys (`v`, `t`, `list`, `index`, `id`, `p`, `page`, `q`, `lang`, `hl`, `tab`); a
+  allow-listed keys (`id`, `p`, `page`, `q`, `lang`, `hl`, `tab` anywhere; `v`, `t`, `list`, `index`
+  on YouTube; `user` on Google Scholar); a
   fragment may only be a plain `#anchor`; no path parameters (`;name=value`), credentials, or
   redirect and tracker hosts (t.co, bit.ly, share.google, lnkd.in and the like). Anything else fails
   the build: link the clean URL.
