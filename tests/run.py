@@ -218,6 +218,9 @@ expect_fail("unhashable-id", [e for e in all_valid() if e["section"] != "papers"
 p, _ = build(write_tree(mutate("demos", link="https://youtu.be/abc123?list=PLx&index=2&t=30")))
 check("youtu-be-list-ok", p.returncode == 0, p.stderr.strip()[:200])
 expect_fail("glued-tracker", mutate("papers", takeaway="See https://a.com/x,https://t.co/y for more"), "t.co")
+expect_fail("glued-credentials", mutate("papers", link="https://example.com/a,https://user:secret@other.com/b"), "credentials")
+expect_fail("glued-http", mutate("papers", takeaway="See https://a.com/x,http://b.com/y here"), "not https")
+expect_fail("glued-trailing-dot-tracker", mutate("papers", takeaway="See https://a.com/x,https://t.co./y here"), "t.co")
 p, _ = build(write_tree(mutate("papers", sources=["https://web.archive.org/web/2020/https://example.com/x"])))
 check("archive-url-ok", p.returncode == 0, p.stderr.strip()[:200])   # an archived URL inside a URL is legitimate
 expect_fail("hash-route-click-id", mutate("demos", link="https://example.com/#/watch?fbclid=abc"), "fbclid")

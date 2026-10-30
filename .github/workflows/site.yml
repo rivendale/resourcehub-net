@@ -44,8 +44,11 @@ jobs:
     steps:
       # Two quick merges can finish out of order; only the run for the current tip of main deploys.
       - id: current
+        shell: bash
         run: |
+          set -euo pipefail   # a failed lookup must fail the run, never read as "an older commit"
           tip=$(git ls-remote "https://github.com/${{ github.repository }}" refs/heads/main | cut -f1)
+          [ -n "$tip" ] || { echo "::error::could not read the tip of main"; exit 1; }
           if [ "$tip" = "${{ github.sha }}" ]; then echo "latest=true" >> "$GITHUB_OUTPUT"
           else echo "latest=false" >> "$GITHUB_OUTPUT"; echo "::notice::main is now $tip; skipping the deploy of ${{ github.sha }}"; fi
       - id: deployment

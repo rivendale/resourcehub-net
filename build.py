@@ -165,11 +165,8 @@ def url_problems(s, path):
         errs.append(f"{path}: port {m.group('port')} is outside 1..65535")
     host = m.group("host").lower()
     u = urllib.parse.urlsplit(s)
-    # The host, and any host embedded later in the URL (two links glued together, or an archive.org wrapper).
-    hosts = [host] + [h.lower() for h in re.findall(r"://([A-Za-z0-9.-]+)", s[len("https://"):])]
-    for h in hosts:
-        if any(h == t or h.endswith("." + t) for t in TRACKER_HOSTS):
-            errs.append(f"{path}: {h} is a redirect/tracker; link the primary source")
+    if any(host == t or host.endswith("." + t) for t in TRACKER_HOSTS):
+        errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
     dpath, dfrag = urllib.parse.unquote(u.path), urllib.parse.unquote(u.fragment)   # %64 is d, %3B is ;
     if host.endswith("substack.com") and "/redirect/" in dpath:
         errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")
@@ -193,13 +190,17 @@ def link_problems(entry, where):
         if re.match(r"^[a-z][a-z0-9+.-]*://[^ ]*$", text, re.I):
             # A URL field (no ASCII space) is checked whole, never a prefix of it; URL_RE then refuses any
             # other whitespace, so a non-breaking space cannot hide the rest of the URL.
-            errs += url_problems(text, path)
-            continue
-        for m in URL_IN_TEXT.finditer(text):
-            url = m.group(0)
-            if (m.start(), m.end()) != (0, len(text)):
-                url = url.rstrip(TRAILING)   # a sentence's own punctuation is not part of the link
-            errs += url_problems(url, path)
+            candidates = [(text, False)]
+        else:
+            candidates = [(m.group(0), (m.start(), m.end()) != (0, len(text))) for m in URL_IN_TEXT.finditer(text)]
+        for cand, in_prose in candidates:
+            # Each scheme:// starts a URL of its own: two links glued together, or an archive.org wrapper,
+            # are checked as separate URLs, each against every rule.
+            pieces = [p for p in re.split(r"(?<![a-z0-9+.-])(?=[a-z][a-z0-9+.-]*://)", cand, flags=re.I) if p]
+            for i, url in enumerate(pieces):
+                if in_prose or i < len(pieces) - 1:
+                    url = url.rstrip(TRAILING)   # punctuation before the next URL or ending a sentence
+                errs += url_problems(url, path)
     return errs
 
 
