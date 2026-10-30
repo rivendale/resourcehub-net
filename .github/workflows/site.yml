@@ -42,5 +42,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Two quick merges can finish out of order; only the run for the current tip of main deploys.
+      - id: current
+        run: |
+          tip=$(git ls-remote "https://github.com/${{ github.repository }}" refs/heads/main | cut -f1)
+          if [ "$tip" = "${{ github.sha }}" ]; then echo "latest=true" >> "$GITHUB_OUTPUT"
+          else echo "latest=false" >> "$GITHUB_OUTPUT"; echo "::notice::main is now $tip; skipping the deploy of ${{ github.sha }}"; fi
       - id: deployment
+        if: steps.current.outputs.latest == 'true'
         uses: actions/deploy-pages@v4

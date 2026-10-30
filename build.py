@@ -43,7 +43,8 @@ TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly"
 ALLOWED_QUERY_KEYS = {"id", "p", "page", "q", "lang", "hl", "tab"}
 # Keys that are harmless only on particular hosts (and their subdomains): YouTube's t is a timestamp, but X's t
 # is a share-tracking token; Scholar's user names the profile's subject, not the reader.
-HOST_QUERY_KEYS = {"youtube.com": {"v", "t", "list", "index"}, "youtu.be": {"t"}, "scholar.google.com": {"user"}}
+HOST_QUERY_KEYS = {"youtube.com": {"v", "t", "list", "index"}, "youtu.be": {"t", "list", "index"},
+                   "scholar.google.com": {"user"}}
 MARKER = ".resourcehub-build"   # only a directory carrying this is ever replaced
 # JSON allows these, XML 1.0 does not (and entries are single-line text): controls incl. newline and tab,
 # the non-characters U+FFFE/U+FFFF, and lone surrogates.
@@ -164,8 +165,11 @@ def url_problems(s, path):
         errs.append(f"{path}: port {m.group('port')} is outside 1..65535")
     host = m.group("host").lower()
     u = urllib.parse.urlsplit(s)
-    if any(host == t or host.endswith("." + t) for t in TRACKER_HOSTS):
-        errs.append(f"{path}: {host} is a redirect/tracker; link the primary source")
+    # The host, and any host embedded later in the URL (two links glued together, or an archive.org wrapper).
+    hosts = [host] + [h.lower() for h in re.findall(r"://([A-Za-z0-9.-]+)", s[len("https://"):])]
+    for h in hosts:
+        if any(h == t or h.endswith("." + t) for t in TRACKER_HOSTS):
+            errs.append(f"{path}: {h} is a redirect/tracker; link the primary source")
     dpath, dfrag = urllib.parse.unquote(u.path), urllib.parse.unquote(u.fragment)   # %64 is d, %3B is ;
     if host.endswith("substack.com") and "/redirect/" in dpath:
         errs.append(f"{path}: a substack /redirect/ link embeds a subscriber token; link the post itself")

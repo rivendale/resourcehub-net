@@ -25,7 +25,7 @@ demos. Built for people and for agents: every entry is also JSON, with `index.js
   not praise or a recommendation.
 - Links are plain https URLs pointing at the primary source. A query string may carry only
   allow-listed keys (`id`, `p`, `page`, `q`, `lang`, `hl`, `tab` anywhere; `v`, `t`, `list`, `index`
-  on YouTube; `user` on Google Scholar); a
+  on YouTube (`t`, `list`, `index` on youtu.be); `user` on Google Scholar); a
   fragment may only be a plain `#anchor`; no path parameters (`;name=value`), credentials, or
   redirect and tracker hosts (t.co, bit.ly, share.google, lnkd.in and the like). Anything else fails
   the build: link the clean URL.

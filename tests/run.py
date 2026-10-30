@@ -215,6 +215,11 @@ expect_fail("user-off-scholar", mutate("papers", link="https://example.com/p?use
 bad_id = copy.deepcopy(BASE["papers"]); bad_id["id"] = ["x"]
 expect_fail("unhashable-id", [e for e in all_valid() if e["section"] != "papers"], "id",
             raw={"papers/x.json": json.dumps(bad_id)})
+p, _ = build(write_tree(mutate("demos", link="https://youtu.be/abc123?list=PLx&index=2&t=30")))
+check("youtu-be-list-ok", p.returncode == 0, p.stderr.strip()[:200])
+expect_fail("glued-tracker", mutate("papers", takeaway="See https://a.com/x,https://t.co/y for more"), "t.co")
+p, _ = build(write_tree(mutate("papers", sources=["https://web.archive.org/web/2020/https://example.com/x"])))
+check("archive-url-ok", p.returncode == 0, p.stderr.strip()[:200])   # an archived URL inside a URL is legitimate
 expect_fail("hash-route-click-id", mutate("demos", link="https://example.com/#/watch?fbclid=abc"), "fbclid")
 expect_fail("hash-query-token", mutate("papers", link="https://app.example.com/#?access_token=abc"), "access_token")
 expect_fail("impossible-month", mutate("papers", date="2026-13"), "date")

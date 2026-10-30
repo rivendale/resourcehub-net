@@ -54,3 +54,5 @@ That is the review gate's job; the build only refuses what is malformed or unsaf
 | F41 | the fallback fails while moving the old site aside | the old site stays; no stray temp dirs | `fallback-aside-cleanup` |
 | F42 | a key that is harmless on one host and a tracker on another (`t` on YouTube vs X), or a profile key (`user` on Google Scholar) | allow-listed per host; elsewhere refused | `scholar-user-ok`, `x-share-t`, `user-off-scholar` |
 | F43 | an `id` that is not a string (a list or object) | refused with the build's own message, never a traceback | `unhashable-id` |
+| F44 | a second URL glued onto the first (`.../x,https://t.co/y`) | every embedded scheme://host is checked against the tracker hosts; an archive.org URL wrapping another URL passes | `glued-tracker`, `archive-url-ok` |
+| F45 | two merges to main whose runs finish out of order | a run deploys only if its commit is still the tip of main (workflow; read by review, not run here) | -- |
