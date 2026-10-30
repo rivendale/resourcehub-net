@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://resourcehub.net/schemas/demos.schema.json",
+  "title": "resourcehub.net demos entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "date",
+    "title",
+    "link",
+    "what_it_shows",
+    "model_or_system",
+    "capability_tag",
+    "claim"
+  ],
+  "properties": {
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "link": {
+      "type": "string",
+      "pattern": "^https://[^\\s]+$"
+    },
+    "what_it_shows": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600
+    },
+    "model_or_system": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "capability_tag": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,40}$"
+    },
+    "claim": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "unverified",
+        "hype",
+        "opinion"
+      ],
+      "description": "How far the entry's central claim is checked: verified against the primary source, or a secondhand claim labelled unverified, hype or opinion."
+    }
+  }
+}

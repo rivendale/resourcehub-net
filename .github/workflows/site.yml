@@ -1,0 +1,56 @@
+name: site
+
+# Every PR: run the end-to-end tests and build, so a malformed or unsafe entry fails
+# before review. A merge to main: build and publish to GitHub Pages (merge = deploy).
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Whole runs serialize per ref, so two quick merges to main deploy in order (the newest last).
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: tests
+        run: python3 -I tests/run.py
+      - name: build
+        run: python3 -I build.py --out site
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: site
+
+  deploy:
+    # Only main deploys: a manual run from a branch must not publish unreviewed entries.
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Two quick merges can finish out of order; only the run for the current tip of main deploys.
+      - id: current
+        shell: bash
+        run: |
+          set -euo pipefail   # a failed lookup must fail the run, never read as "an older commit"
+          tip=$(git ls-remote "https://github.com/${{ github.repository }}" refs/heads/main | cut -f1)
+          [ -n "$tip" ] || { echo "::error::could not read the tip of main"; exit 1; }
+          if [ "$tip" = "${{ github.sha }}" ]; then echo "latest=true" >> "$GITHUB_OUTPUT"
+          else echo "latest=false" >> "$GITHUB_OUTPUT"; echo "::notice::main is now $tip; skipping the deploy of ${{ github.sha }}"; fi
+      - id: deployment
+        if: steps.current.outputs.latest == 'true'
+        uses: actions/deploy-pages@v4
