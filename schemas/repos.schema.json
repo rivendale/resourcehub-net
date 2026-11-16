@@ -90,7 +90,7 @@
     "releases_last_year": {
       "type": "integer",
       "minimum": 0,
-      "description": "Published releases in the 365 days before reviewed_on: the release cadence."
+      "description": "Releases in the 365 days before reviewed_on: GitHub releases, or package-index versions where the project publishes none on GitHub (latest_release then names the index)."
     },
     "latest_release": {
       "type": [
