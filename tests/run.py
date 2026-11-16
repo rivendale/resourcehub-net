@@ -339,6 +339,12 @@ expect_fail("people-search-people-link", mutate("people", links={"site": "https:
 expect_fail("people-search-prose-url", mutate("repos", focus_reason="Compare https://nansen.ai/ labels."), "people by name")
 for i, prose in enumerate(("See https://nansen.ai, which labels wallets.", "Compare (https://nansen.ai).", "Read https://opencorporates.com; then stop.")):
     expect_fail(f"people-search-punctuated-{i}", mutate("repos", focus_reason=prose), "people by name")
+# the guard names the held host itself, even where the link rules also refuse the URL (userinfo, percent-encoded host)
+for name, prose in (("userinfo", "See https://user@nansen.ai/ here."), ("userinfo-password", "See https://user:pw@opencorporates.com/ here."),
+                    ("pct-dot", "See https://nansen%2eai/ here."), ("pct-letter", "See https://%6eansen.ai/ here."),
+                    ("glued", "See https://a.example.com/x,https://nansen.ai/y here."),
+                    ("upper-subdomain-dot-port", "See https://App.NANSEN.ai.:443/ here.")):
+    expect_fail(f"people-search-{name}", mutate("repos", focus_reason=prose), "people by name")
 # F50b: every form of "recommend" is a recommending word; a word that only contains it is not
 expect_fail("ranking-word-recommend", mutate("sources", provides="We recommend this feed."), "ranking")
 expect_fail("ranking-word-recommends", mutate("repos", focus_reason="The team recommends it."), "ranking")

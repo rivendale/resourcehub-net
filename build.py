@@ -245,14 +245,20 @@ def rule_problems(entry, where):
         if m:
             errs.append(f"{where}.{k}: ranking or recommending word {m.group(0)!r}; describe, do not rank")
     # The people line reads every URL in every field of every section: a link, a paper's code, a person's links,
-    # or a URL inside prose. A host is taken from each scheme:// occurrence, so glued URLs count too.
+    # or a URL inside prose. Each scheme:// run (to whitespace, a closing bracket or a quote) is split where another
+    # scheme:// starts, stripped of sentence punctuation and parsed; the host is percent-decoded, lowercased and
+    # stripped of a trailing dot, so userinfo, ports and %-encoding cannot hide it.
     held = set()
     for _, text in strings(entry, where):
-        # The host is DNS label characters only, so punctuation after a prose URL ("nansen.ai," or "(...)") is not part of it.
-        for m in re.finditer(r"[a-z][a-z0-9+.-]*://([A-Za-z0-9.-]+)", text, re.I):
-            host = m.group(1).lower().rstrip(".")
-            if any(host == h or host.endswith("." + h) for h in PEOPLE_SEARCH_HOSTS):
-                held.add(host)
+        for run in re.findall(r"[a-z][a-z0-9+.-]*://[^\s\"'<>)\]}]+", text, re.I):
+            for piece in re.split(r"(?<![a-z0-9+.-])(?=[a-z][a-z0-9+.-]*://)", run, flags=re.I):
+                try:
+                    host = urllib.parse.urlsplit(piece.rstrip(TRAILING)).hostname or ""
+                except ValueError:   # a malformed port or bracket; link_problems() reports the URL itself
+                    host = ""
+                host = urllib.parse.unquote(host).lower().rstrip(".")
+                if host and any(host == h or host.endswith("." + h) for h in PEOPLE_SEARCH_HOSTS):
+                    held.add(host)
     for host in sorted(held):
         errs.append(f"{where}: {host} is held: its main use is searching people by name (PEOPLE_SEARCH_HOSTS)")
     if entry.get("section") == "repos" and isinstance(entry.get("releases_last_year"), int) \
