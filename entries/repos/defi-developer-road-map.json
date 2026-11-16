@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It does not review or test the tools it links, and its own wording ranks some of them.",
+  "focus": "medium",
+  "focus_reason": "A broad map for the need, updated 2026-11-03; as a link list it inherits the quality of whatever it points to.",
+  "id": "defi-developer-road-map",
+  "language": "Markdown",
+  "last_commit": "2026-11-03",
+  "latest_release": "v2.0.0 (2024-03-21)",
+  "license": "Unlicense",
+  "measured_against": "Need: a reading map of DeFi development tools and research.",
+  "open_issues": 0,
+  "pushed": "2026-11-03",
+  "releases_last_year": 0,
+  "repo": "OffcierCia/DeFi-Developer-Road-Map",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/OffcierCia/DeFi-Developer-Road-Map"
+  ],
+  "stars_at_review": 10901,
+  "tests_ci": "Not applicable: a curated list of links, with no code to test.",
+  "url": "https://github.com/OffcierCia/DeFi-Developer-Road-Map",
+  "what_it_is": "A community-maintained handbook of links to DeFi and blockchain development tools, research and references, translated into several languages."
+}

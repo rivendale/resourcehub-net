@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "Its centre is optimization, producing weights, rather than reporting on an existing portfolio; it publishes to PyPI, not GitHub releases.",
+  "focus": "medium",
+  "focus_reason": "Its risk measures and risk parity tools can describe concentration and volatility, but they are reached through an optimization API. 9 open issues; 6 versions in the year.",
+  "id": "riskfolio-lib",
+  "language": "Python",
+  "last_commit": "2026-11-04",
+  "latest_release": "7.4.1 on PyPI (2026-11-04)",
+  "license": "BSD-3-Clause",
+  "measured_against": "Need: measure concentration, volatility and drawdown of a portfolio from its holdings or returns, in code the user runs.",
+  "open_issues": 9,
+  "pushed": "2026-11-04",
+  "releases_last_year": 6,
+  "repo": "dcajasn/Riskfolio-Lib",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/dcajasn/Riskfolio-Lib"
+  ],
+  "stars_at_review": 4611,
+  "tests_ci": "A tests/ directory; CI workflows build the package and the documentation.",
+  "url": "https://github.com/dcajasn/Riskfolio-Lib",
+  "what_it_is": "A portfolio optimization library on CVXPY and pandas, with mean-risk and risk parity optimization over many convex risk measures and hierarchical methods (HRP, HERC)."
+}

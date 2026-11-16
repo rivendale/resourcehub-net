@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It computes target allocations; it does not track positions or report on a portfolio as held.",
+  "focus": "low",
+  "focus_reason": "Its covariance and risk models are usable for measurement, but the library is built to produce weights, which is outside the stated need. One release in the year; last commit 2026-07-07.",
+  "id": "pyportfolioopt",
+  "language": "Python",
+  "last_commit": "2026-07-07",
+  "latest_release": "v1.6.0 (2026-02-26)",
+  "license": "MIT",
+  "measured_against": "Need: measure concentration, volatility and drawdown of a portfolio from its holdings or returns, in code the user runs.",
+  "open_issues": 86,
+  "pushed": "2026-07-07",
+  "releases_last_year": 1,
+  "repo": "PyPortfolio/PyPortfolioOpt",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/PyPortfolio/PyPortfolioOpt"
+  ],
+  "stars_at_review": 6170,
+  "tests_ci": "A tests/ directory; a main CI workflow and a release workflow.",
+  "url": "https://github.com/PyPortfolio/PyPortfolioOpt",
+  "what_it_is": "A Python library of portfolio optimization methods: mean-variance, Black-Litterman, covariance shrinkage and Hierarchical Risk Parity. The repository moved from robertmartin8/PyPortfolioOpt."
+}

@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "The Commons Clause in its licence withholds the right to sell the software or services whose value derives from it.",
+  "focus": "medium",
+  "focus_reason": "Fast vectorised backtests fit the need; the licence condition limits commercial use. 8 releases in the year; 109 open issues.",
+  "id": "vectorbt",
+  "language": "Python",
+  "last_commit": "2026-11-11",
+  "latest_release": "v1.2.1 (2026-11-11)",
+  "license": "Apache-2.0 with Commons Clause",
+  "measured_against": "Need: test a rule-based portfolio or trading idea against historical data.",
+  "open_issues": 109,
+  "pushed": "2026-11-11",
+  "releases_last_year": 8,
+  "repo": "polakowo/vectorbt",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/polakowo/vectorbt"
+  ],
+  "stars_at_review": 9865,
+  "tests_ci": "A tests/ directory and a tests workflow.",
+  "url": "https://github.com/polakowo/vectorbt",
+  "what_it_is": "A Python toolkit for vectorised trading research on NumPy and Numba, with an optional Rust engine."
+}

@@ -1,0 +1,30 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Mikhail Chernov",
+    "Bryan T. Kelly",
+    "Semyon Malamud",
+    "Johannes Schwab"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-11-09",
+  "id": "nber-w35988-hidden-sharpe-ratio",
+  "key_result": "For U.S. equities the estimated maximal annualised Sharpe ratio is about 7.4, or 5.0 excluding micro-caps, against 1.0 to 4.0 for portfolio-based benchmarks.",
+  "link": "https://www.nber.org/papers/w35988",
+  "publication": "other",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://www.nber.org/papers/w35988"
+  ],
+  "tags": [
+    "finance",
+    "asset-pricing",
+    "statistics"
+  ],
+  "takeaway": "Estimates the maximum attainable Sharpe ratio in large cross-sections of assets directly, without building the efficient portfolio.",
+  "title": "The Hidden Sharpe Ratio",
+  "why_it_matters": "It shows that ridge-regularised Markowitz portfolios fall short of the true maximum by an explicit factor."
+}

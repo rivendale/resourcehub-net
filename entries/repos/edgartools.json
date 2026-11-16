@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It reads public filings only. Version 6 needs Python 3.11 or newer and changes some 5.x APIs.",
+  "focus": "high",
+  "focus_reason": "It covers parsing as well as download, has regression tests against live filings, and shipped 128 releases in the year with 32 open issues.",
+  "id": "edgartools",
+  "language": "Python",
+  "last_commit": "2026-11-16",
+  "latest_release": "v6.2.0 (2026-11-15)",
+  "license": "MIT",
+  "measured_against": "Need: read SEC EDGAR filings and their financial data into structured form.",
+  "open_issues": 32,
+  "pushed": "2026-11-16",
+  "releases_last_year": 128,
+  "repo": "dgunning/edgartools",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/dgunning/edgartools"
+  ],
+  "stars_at_review": 2858,
+  "tests_ci": "A tests/ directory; regression-test and smoke-test workflows against recent filings.",
+  "url": "https://github.com/dgunning/edgartools",
+  "what_it_is": "A Python library that turns SEC EDGAR filings into typed objects: financial statements, XBRL, insider trades, fund holdings and other filing types."
+}

@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It does nothing without a Beancount ledger and does not import statements itself. Its GitHub releases are a rolling nightly; versions are published to PyPI.",
+  "focus": "medium",
+  "focus_reason": "A usable view over a Beancount ledger, so its value against the need depends on adopting Beancount. 10 versions in the year; 75 open issues.",
+  "id": "fava",
+  "language": "Python",
+  "last_commit": "2026-11-15",
+  "latest_release": "1.31 on PyPI (2026-11-10)",
+  "license": "MIT",
+  "measured_against": "Need: track a household's holdings and transactions across accounts over time, self-hosted, from statements or exports the owner supplies.",
+  "open_issues": 75,
+  "pushed": "2026-11-15",
+  "releases_last_year": 10,
+  "repo": "beancount/fava",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/beancount/fava"
+  ],
+  "stars_at_review": 2604,
+  "tests_ci": "A tests/ directory; CI workflows run tests and publish.",
+  "url": "https://github.com/beancount/fava",
+  "what_it_is": "A web interface for Beancount ledgers: balances, holdings, reports and queries in a browser."
+}

@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Stijn Van Nieuwerburgh",
+    "Zijin Su"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-11-16",
+  "id": "nber-w36032-clouds-of-credit",
+  "key_result": "In the authors' low-productivity scenario, losses reach 16.8 trillion dollars across shareholders and creditors with 40% loss-given-default on debt; debt funds nearly 60% of the expansion.",
+  "link": "https://www.nber.org/papers/w36032",
+  "publication": "other",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://www.nber.org/papers/w36032"
+  ],
+  "tags": [
+    "finance",
+    "credit",
+    "ai-infrastructure"
+  ],
+  "takeaway": "Maps the debt and equity claims that fund the AI compute buildout and models how losses would spread among them.",
+  "title": "Clouds of Credit: Mapping the Financial Web Behind AI Compute",
+  "why_it_matters": "It quantifies credit exposure to AI data-centre investment, a question usually argued without a network model."
+}

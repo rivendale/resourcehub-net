@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It is not a data source itself; each provider keeps its own terms, and many need the user's own API key.",
+  "focus": "high",
+  "focus_reason": "One interface over many of the official sources in this directory, with per-extension unit tests. 7 releases in the year; 51 open issues.",
+  "id": "openbb",
+  "language": "Python",
+  "last_commit": "2026-11-15",
+  "latest_release": "openbb-v5.0.0 (2026-09-30)",
+  "license": "Apache-2.0",
+  "measured_against": "Need: fetch market and economic data programmatically for research, from sources whose terms are clear.",
+  "open_issues": 51,
+  "pushed": "2026-11-15",
+  "releases_last_year": 7,
+  "repo": "openbq-org/OpenBB",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/openbq-org/OpenBB"
+  ],
+  "stars_at_review": 75467,
+  "tests_ci": "Unit-test workflows for the core and for each data extension; linting and CodeQL.",
+  "url": "https://github.com/openbq-org/OpenBB",
+  "what_it_is": "The Open Data Platform: one toolset that connects proprietary, licensed and public data providers to Python, a REST API and an MCP server. Extensions include FRED, SEC, BLS, IMF, ECB and EIA. The former OpenBB-finance/OpenBB address redirects here."
+}

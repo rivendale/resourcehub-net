@@ -1,0 +1,27 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Vivek Acharya"
+  ],
+  "claim": "unverified",
+  "code": "https://github.com/curiosityexplorer/two-ledger-model",
+  "date": "2026-11-04",
+  "id": "arxiv-2611-06989-two-ledger-model",
+  "key_result": "A correlation spine (trace context, A2A and MCP metadata, business keys, probabilistic matching) assigns each usage record to a transaction with a recorded confidence.",
+  "link": "https://arxiv.org/abs/2611.06989",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2611.06989"
+  ],
+  "tags": [
+    "ai-agents",
+    "accounting",
+    "finops"
+  ],
+  "takeaway": "Proposes joining billing data in the FOCUS format to invocation-level telemetry so that AI cost can be assigned to individual business transactions.",
+  "title": "The Two-Ledger Model: Transaction-Grain Cost Accounting for Multi-Agent AI Systems Across Clouds, Models, and Systems of Record",
+  "why_it_matters": "Provider billing arrives aggregated by SKU and period, so it cannot answer what one order or case cost in AI."
+}

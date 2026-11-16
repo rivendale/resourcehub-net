@@ -1,0 +1,32 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Yuchen Lei",
+    "Yuexin Xiang",
+    "Tsz Hon Yuen",
+    "Andreas Deppeler",
+    "Qin Wang",
+    "Kim-Kwang Raymond Choo"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2025-01-30",
+  "id": "arxiv-2501-18158-llm-bitcoin-transactions",
+  "key_result": "Node-level extraction exceeds 98.5% accuracy on most metrics; address classification reaches 50.49% top-1 on raw graphs and 72.43% top-3 with engineered features.",
+  "link": "https://arxiv.org/abs/2501.18158",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2501.18158"
+  ],
+  "tags": [
+    "crypto",
+    "llm",
+    "graphs"
+  ],
+  "takeaway": "Tests five language models on Bitcoin transaction graphs, using a compact graph format and a sampling method to fit context limits.",
+  "title": "Large Language Models for Cryptocurrency Transaction Analysis: A Bitcoin Case Study",
+  "why_it_matters": "It measures where language models help with transaction analysis and where global graph reasoning breaks down."
+}

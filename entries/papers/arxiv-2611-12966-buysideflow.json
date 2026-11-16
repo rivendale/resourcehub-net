@@ -1,0 +1,36 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Dong Bo",
+    "Fanjin Zhang",
+    "Ke Cheng",
+    "Xinxin Zhao",
+    "Xiaowei Su",
+    "Yang Wang",
+    "Jinghang Xu",
+    "Cuiping Li",
+    "Hong Chen",
+    "Jing Zhang"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-11-07",
+  "id": "arxiv-2611-12966-buysideflow",
+  "key_result": "Result accuracy ranged from 16.2% to 36.8% across nine agent configurations; in an audit, 193 of 380 runs that passed result checks (50.8%) had point-in-time violations.",
+  "link": "https://arxiv.org/abs/2611.12966",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2611.12966"
+  ],
+  "tags": [
+    "ai-agents",
+    "finance",
+    "benchmark"
+  ],
+  "takeaway": "A benchmark of 408 Chinese-language investment research tasks that checks whether agents respect disclosure cutoffs in historical data.",
+  "title": "BuySideFlow: A Point-in-Time Benchmark for LLM Agents in Investment Research",
+  "why_it_matters": "It shows that a correct-looking answer can still rest on data that was not available at the time."
+}

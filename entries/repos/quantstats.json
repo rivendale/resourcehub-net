@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It works on return series, not holdings, so it does not measure concentration by position or issuer.",
+  "focus": "medium",
+  "focus_reason": "Volatility and drawdown are covered directly with few open issues (8) and steady releases (7 in the year); concentration has to be computed elsewhere.",
+  "id": "quantstats",
+  "language": "Python",
+  "last_commit": "2026-11-02",
+  "latest_release": "v0.0.86 (2026-09-27)",
+  "license": "Apache-2.0",
+  "measured_against": "Need: measure concentration, volatility and drawdown of a portfolio from its holdings or returns, in code the user runs.",
+  "open_issues": 8,
+  "pushed": "2026-11-02",
+  "releases_last_year": 7,
+  "repo": "ranaroussi/quantstats",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/ranaroussi/quantstats"
+  ],
+  "stars_at_review": 7878,
+  "tests_ci": "A tests/ directory; a compatibility-test workflow and a publish workflow.",
+  "url": "https://github.com/ranaroussi/quantstats",
+  "what_it_is": "A Python library for portfolio analytics from a returns series: metrics such as Sharpe ratio and volatility, drawdown and rolling-statistics plots, and HTML tear sheets."
+}

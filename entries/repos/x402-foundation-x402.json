@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It implements the protocol; settlement depends on the payment networks and facilitators the user chooses.",
+  "focus": "high",
+  "focus_reason": "The reference code for the protocol, with unit and end-to-end tests. 32 package versions in the year; 422 open issues.",
+  "id": "x402-foundation-x402",
+  "language": "TypeScript",
+  "last_commit": "2026-11-16",
+  "latest_release": "2.28.0 on PyPI (2026-11-12)",
+  "license": "Apache-2.0",
+  "measured_against": "Need: implement or inspect HTTP payment flows for machine and agent payments.",
+  "open_issues": 422,
+  "pushed": "2026-11-16",
+  "releases_last_year": 32,
+  "repo": "x402-foundation/x402",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/x402-foundation/x402"
+  ],
+  "stars_at_review": 6813,
+  "tests_ci": "Unit-test and end-to-end test workflows, plus per-language checks (Go, Python, Java) and linting.",
+  "url": "https://github.com/x402-foundation/x402",
+  "what_it_is": "Reference implementations of x402, an open standard for payments over HTTP, in TypeScript, Python, Go and Java. coinbase/x402 is now a development fork of this repository."
+}

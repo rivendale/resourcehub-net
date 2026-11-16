@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "A hosted platform from the same company is separate; the library itself is free.",
+  "focus": "medium",
+  "focus_reason": "Broad format support fits the need, with tests and a benchmark in CI. 62 releases in the year; 192 open issues.",
+  "id": "unstructured",
+  "language": "Python",
+  "last_commit": "2026-11-14",
+  "latest_release": "0.27.37 (2026-11-06)",
+  "license": "Apache-2.0",
+  "measured_against": "Need: turn statements and filings (PDF and office files) into text and tables a program can read, locally.",
+  "open_issues": 192,
+  "pushed": "2026-11-14",
+  "releases_last_year": 62,
+  "repo": "Unstructured-IO/unstructured",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/Unstructured-IO/unstructured"
+  ],
+  "stars_at_review": 15749,
+  "tests_ci": "test_unstructured/ directories; a CI workflow and a partition benchmark.",
+  "url": "https://github.com/Unstructured-IO/unstructured",
+  "what_it_is": "Open-source components that partition PDFs, HTML, Word documents and images into structured elements for language-model pipelines."
+}

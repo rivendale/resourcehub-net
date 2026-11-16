@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "Its README warns not to use it for 2025 and later US tax reporting until per-wallet application is supported (issue 135). It handles crypto only.",
+  "focus": "low",
+  "focus_reason": "The lot accounting matches the need, but the project's own notice rules out current US tax years and there has been no release since 2025-02-15.",
+  "id": "rp2",
+  "language": "Python",
+  "last_commit": "2026-01-26",
+  "latest_release": "1.7.2 (2025-02-15)",
+  "license": "Apache-2.0",
+  "measured_against": "Need: compute tax lots, cost basis and realised gains from transaction records, to check against IRS Publications 550 and 551.",
+  "open_issues": 54,
+  "pushed": "2026-07-27",
+  "releases_last_year": 0,
+  "repo": "eprbell/rp2",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/eprbell/rp2"
+  ],
+  "stars_at_review": 405,
+  "tests_ci": "A tests/ directory; CI runs unit tests on Unix and Windows, static analysis and CodeQL.",
+  "url": "https://github.com/eprbell/rp2",
+  "what_it_is": "A crypto tax calculator for several countries: it computes lots, gains and losses from input spreadsheets and writes reports, including a Form 8949-style report for the US."
+}

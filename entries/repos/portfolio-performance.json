@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It is a single-user desktop program, not a web or multi-user service, and it does not file or prepare tax returns.",
+  "focus": "high",
+  "focus_reason": "Local files, statement importers and performance reporting match the need. 24 releases in the year; 336 open issues on a large, long-lived codebase.",
+  "id": "portfolio-performance",
+  "language": "Java",
+  "last_commit": "2026-11-15",
+  "latest_release": "0.90.0 (2026-11-01)",
+  "license": "EPL-1.0",
+  "measured_against": "Need: track a household's holdings and transactions across accounts over time, self-hosted, from statements or exports the owner supplies.",
+  "open_issues": 336,
+  "pushed": "2026-11-16",
+  "releases_last_year": 24,
+  "repo": "portfolio-performance/portfolio",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/portfolio-performance/portfolio"
+  ],
+  "stars_at_review": 4172,
+  "tests_ci": "Test modules in the source tree (name.abuchen.portfolio.tests, ui.tests, rest.tests); one CI workflow builds and tests.",
+  "url": "https://github.com/portfolio-performance/portfolio",
+  "what_it_is": "A desktop application to track and evaluate an investment portfolio across stocks, crypto and other assets, with importers for broker PDF statements and Interactive Brokers Flex Query files."
+}

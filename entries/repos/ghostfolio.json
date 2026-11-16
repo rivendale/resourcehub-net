@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It is not double-entry accounting and does not produce tax forms. A hosted Premium plan is a separate, paid service from the same team.",
+  "focus": "high",
+  "focus_reason": "It covers the need directly: self-hosted, transactions imported by the owner, holdings over time. 155 releases in the year and a commit on the review date; 173 open issues.",
+  "id": "ghostfolio",
+  "language": "TypeScript",
+  "last_commit": "2026-11-16",
+  "latest_release": "3.100.0 (2026-11-15)",
+  "license": "AGPL-3.0",
+  "measured_against": "Need: track a household's holdings and transactions across accounts over time, self-hosted, from statements or exports the owner supplies.",
+  "open_issues": 173,
+  "pushed": "2026-11-16",
+  "releases_last_year": 155,
+  "repo": "ghostfolio/ghostfolio",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/ghostfolio/ghostfolio"
+  ],
+  "stars_at_review": 9715,
+  "tests_ci": "A test/ directory and Jest configuration; CI workflows build the code and the Docker image.",
+  "url": "https://github.com/ghostfolio/ghostfolio",
+  "what_it_is": "A web application for tracking stocks, ETFs and crypto, built for personal use in continuous operation. Self-hosted from official Docker images; imports and exports transactions."
+}

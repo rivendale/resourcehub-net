@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It extracts structure; it does not interpret financial content. 768 open issues reflect a large user base and a wide format surface.",
+  "focus": "high",
+  "focus_reason": "Local parsing with table structure is the need. 103 releases in the year and tests in CI; the open-issue count is high.",
+  "id": "docling",
+  "language": "Python",
+  "last_commit": "2026-11-16",
+  "latest_release": "v2.150.1 (2026-11-14)",
+  "license": "MIT",
+  "measured_against": "Need: turn statements and filings (PDF and office files) into text and tables a program can read, locally.",
+  "open_issues": 768,
+  "pushed": "2026-11-16",
+  "releases_last_year": 103,
+  "repo": "docling-project/docling",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/docling-project/docling"
+  ],
+  "stars_at_review": 70656,
+  "tests_ci": "A tests/ directory; main, heavy-example and documentation CI workflows.",
+  "url": "https://github.com/docling-project/docling",
+  "what_it_is": "A document-processing library: parses PDF, DOCX, PPTX, XLSX, HTML, email and image formats, with page layout, reading order and table structure for PDFs. Runs locally."
+}

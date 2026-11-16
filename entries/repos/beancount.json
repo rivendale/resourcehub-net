@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It has no importer for any particular broker built in and no graphical interface of its own (Fava provides one). It publishes versions to PyPI, not GitHub releases.",
+  "focus": "medium",
+  "focus_reason": "Holdings with cost lots can be tracked in plain text the owner controls, but every account must be modelled by hand or by importers the user writes. Last commit 2026-08-23.",
+  "id": "beancount",
+  "language": "Python",
+  "last_commit": "2026-08-23",
+  "latest_release": "3.2.3 on PyPI (2026-05-05)",
+  "license": "GPL-2.0",
+  "measured_against": "Need: track a household's holdings and transactions across accounts over time, self-hosted, from statements or exports the owner supplies.",
+  "open_issues": 210,
+  "pushed": "2026-08-23",
+  "releases_last_year": 3,
+  "repo": "beancount/beancount",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/beancount/beancount"
+  ],
+  "stars_at_review": 6185,
+  "tests_ci": "Tests live beside the code; CI workflows run tests, linting and wheel builds.",
+  "url": "https://github.com/beancount/beancount",
+  "what_it_is": "A double-entry bookkeeping language: transactions are written in a text file, read into memory and reported on. Version 3 is the current stable line."
+}
