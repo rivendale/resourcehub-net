@@ -337,11 +337,15 @@ expect_fail("people-search-paper-link", mutate("papers", link="https://opencorpo
 expect_fail("people-search-paper-code", mutate("papers", code="https://www.opensanctions.org/datasets/"), "people by name")
 expect_fail("people-search-people-link", mutate("people", links={"site": "https://adviserinfo.sec.gov/"}), "people by name")
 expect_fail("people-search-prose-url", mutate("repos", focus_reason="Compare https://nansen.ai/ labels."), "people by name")
+for i, prose in enumerate(("See https://nansen.ai, which labels wallets.", "Compare (https://nansen.ai).", "Read https://opencorporates.com; then stop.")):
+    expect_fail(f"people-search-punctuated-{i}", mutate("repos", focus_reason=prose), "people by name")
 # F50b: every form of "recommend" is a recommending word; a word that only contains it is not
 expect_fail("ranking-word-recommend", mutate("sources", provides="We recommend this feed."), "ranking")
 expect_fail("ranking-word-recommends", mutate("repos", focus_reason="The team recommends it."), "ranking")
 expect_fail("ranking-word-recommendation", mutate("sources", access_note="Our recommendation: a key."), "ranking")
 expect_fail("ranking-word-recommending", mutate("repos", does_not_do="Recommending tickers."), "ranking")
+p, _ = build(write_tree(mutate("sources", provides="Training data for a recommender system.")))
+check("ranking-word-recommender-ok", p.returncode == 0, p.stderr.strip()[:200])   # a longer word that contains it passes
 expect_fail("ranking-word-source", mutate("sources", provides="The best source for rates."), "ranking")
 expect_fail("ranking-word-repo", mutate("repos", focus_reason="A leading library for this."), "ranking")
 expect_fail("ranking-word-top", mutate("sources", access_note="Top tier needs a key."), "ranking")

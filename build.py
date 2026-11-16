@@ -248,7 +248,8 @@ def rule_problems(entry, where):
     # or a URL inside prose. A host is taken from each scheme:// occurrence, so glued URLs count too.
     held = set()
     for _, text in strings(entry, where):
-        for m in re.finditer(r"[a-z][a-z0-9+.-]*://([^/?#\s:\\\"'<>@]+)", text, re.I):
+        # The host is DNS label characters only, so punctuation after a prose URL ("nansen.ai," or "(...)") is not part of it.
+        for m in re.finditer(r"[a-z][a-z0-9+.-]*://([A-Za-z0-9.-]+)", text, re.I):
             host = m.group(1).lower().rstrip(".")
             if any(host == h or host.endswith("." + h) for h in PEOPLE_SEARCH_HOSTS):
                 held.add(host)
