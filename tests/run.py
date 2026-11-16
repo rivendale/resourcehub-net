@@ -332,6 +332,16 @@ for host_url in ("https://opencorporates.com/", "https://www.opensanctions.org/s
 p, _ = build(write_tree(mutate("sources", url="https://ofac.treasury.gov/sanctions-list-service", subject="sanctions-and-kyc",
                                sources=["https://ofac.treasury.gov/sanctions-list-service"])))
 check("designation-list-ok", p.returncode == 0, p.stderr.strip()[:200])
+# F55b: the people guard reads every URL in every section, not only a source's url and sources
+expect_fail("people-search-paper-link", mutate("papers", link="https://opencorporates.com/officers/x"), "people by name")
+expect_fail("people-search-paper-code", mutate("papers", code="https://www.opensanctions.org/datasets/"), "people by name")
+expect_fail("people-search-people-link", mutate("people", links={"site": "https://adviserinfo.sec.gov/"}), "people by name")
+expect_fail("people-search-prose-url", mutate("repos", focus_reason="Compare https://nansen.ai/ labels."), "people by name")
+# F50b: every form of "recommend" is a recommending word; a word that only contains it is not
+expect_fail("ranking-word-recommend", mutate("sources", provides="We recommend this feed."), "ranking")
+expect_fail("ranking-word-recommends", mutate("repos", focus_reason="The team recommends it."), "ranking")
+expect_fail("ranking-word-recommendation", mutate("sources", access_note="Our recommendation: a key."), "ranking")
+expect_fail("ranking-word-recommending", mutate("repos", does_not_do="Recommending tickers."), "ranking")
 expect_fail("ranking-word-source", mutate("sources", provides="The best source for rates."), "ranking")
 expect_fail("ranking-word-repo", mutate("repos", focus_reason="A leading library for this."), "ranking")
 expect_fail("ranking-word-top", mutate("sources", access_note="Top tier needs a key."), "ranking")

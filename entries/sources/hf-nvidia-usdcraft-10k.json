@@ -1,0 +1,24 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-nvidia-usdcraft-10k",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "license": "Apache-2.0",
+  "likes": 35,
+  "link_check": "ok",
+  "name": "nvidia/USDCraft-10K",
+  "provides": "10,000 simulation-ready 3D objects in OpenUSD across 1,000 categories, 8,222 of them articulated with moving joints, each with parts, joints, collision geometry, masses and physics materials for NVIDIA Isaac Sim. Generated from text prompts with the USDCraft method (arXiv 2610.11322); the card says the set is uploaded progressively.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/datasets/nvidia/USDCraft-10K",
+    "https://arxiv.org/abs/2610.11322",
+    "https://github.com/NVlabs/USDCraft"
+  ],
+  "subject": "3d-and-simulation",
+  "url": "https://huggingface.co/datasets/nvidia/USDCraft-10K"
+}

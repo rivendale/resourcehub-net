@@ -30,6 +30,7 @@
     "subject": {
       "type": "string",
       "enum": [
+        "3d-and-simulation",
         "account-data",
         "agent-standards",
         "crypto-and-onchain",
@@ -39,7 +40,8 @@
         "real-estate",
         "sanctions-and-kyc",
         "security-vulnerabilities",
-        "tax"
+        "tax",
+        "web-development"
       ],
       "description": "What the source is about; the page filters on it."
     },

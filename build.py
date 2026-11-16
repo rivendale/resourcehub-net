@@ -43,7 +43,7 @@ DISCLAIMER = ("Data only. Entries describe what a source or project is, how to r
               "investment, tax or legal advice, a recommendation or a ranking. Read each provider's own terms: access rules "
               "and licences change.")
 # Listing language stays neutral: these words rank or recommend, so the build refuses them in our own prose.
-RANKING = re.compile(r"\b(best|leading|top|number one|recommended|must-have|world-class|premier)\b", re.I)
+RANKING = re.compile(r"\b(best|leading|top|number one|recommend(?:s|ed|ing|ations?)?|must-have|world-class|premier)\b", re.I)
 RANKING_FIELDS = {"sources": ("provides", "access_note", "link_note"),
                   "repos": ("what_it_is", "focus_reason", "measured_against", "tests_ci", "does_not_do")}
 # The people line: official government designation lists (sanctions, exclusions) may be listed; a source whose main
@@ -244,14 +244,20 @@ def rule_problems(entry, where):
         m = RANKING.search(entry.get(k) or "") if isinstance(entry.get(k), str) else None
         if m:
             errs.append(f"{where}.{k}: ranking or recommending word {m.group(0)!r}; describe, do not rank")
+    # The people line reads every URL in every field of every section: a link, a paper's code, a person's links,
+    # or a URL inside prose. A host is taken from each scheme:// occurrence, so glued URLs count too.
+    held = set()
+    for _, text in strings(entry, where):
+        for m in re.finditer(r"[a-z][a-z0-9+.-]*://([^/?#\s:\\\"'<>@]+)", text, re.I):
+            host = m.group(1).lower().rstrip(".")
+            if any(host == h or host.endswith("." + h) for h in PEOPLE_SEARCH_HOSTS):
+                held.add(host)
+    for host in sorted(held):
+        errs.append(f"{where}: {host} is held: its main use is searching people by name (PEOPLE_SEARCH_HOSTS)")
     if entry.get("section") == "repos" and isinstance(entry.get("releases_last_year"), int) \
             and entry["releases_last_year"] > 0 and not entry.get("latest_release"):
         errs.append(f"{where}.latest_release: {entry['releases_last_year']} releases in the year but no latest release named")
     if entry.get("section") == "sources":
-        for u in [entry.get("url")] + list(entry.get("sources") or []):
-            host = urllib.parse.urlsplit(u).hostname or "" if isinstance(u, str) else ""
-            if any(host == h or host.endswith("." + h) for h in PEOPLE_SEARCH_HOSTS):
-                errs.append(f"{where}: {host} is held: its main use is searching people by name (PEOPLE_SEARCH_HOSTS)")
         if ("stars" in entry or "likes" in entry) and "counted_on" not in entry:
             errs.append(f"{where}: stars or likes need counted_on, the date they were counted")
         if entry.get("link_check") in ("bot-blocked", "timeout"):

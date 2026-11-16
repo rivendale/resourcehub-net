@@ -1,0 +1,24 @@
+{
+  "access": "free",
+  "access_note": "Usage telemetry is on by default; setting DISABLE_TELEMETRY=1 switches it off, per its README",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "modern-web-guidance",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "license": "Apache-2.0",
+  "link_check": "ok",
+  "name": "Modern Web Guidance",
+  "provides": "Agent skills that bring web platform guidance and browser compatibility data into coding agents, installed with an npx command; stewarded by the Chrome, Edge, Firefox and MDN teams.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://developer.chrome.com/docs/modern-web-guidance",
+    "https://github.com/GoogleChrome/modern-web-guidance"
+  ],
+  "stars": 20153,
+  "subject": "web-development",
+  "url": "https://developer.chrome.com/docs/modern-web-guidance"
+}
