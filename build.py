@@ -419,7 +419,11 @@ def card(e):
             facts.append(f'{e["stars"]:,} GitHub stars on {esc(e["counted_on"])}')
         if "likes" in e:
             facts.append(f'{e["likes"]:,} Hugging Face likes on {esc(e["counted_on"])}')
-        check = "link opened and read" if e["link_check"] == "ok" else f'{esc(e["link_check"])}: {esc(e.get("link_note", ""))}'
+        note = e.get("link_note")
+        if e["link_check"] == "ok":
+            check = f"link opened; {esc(note)}" if note else "link opened and read"
+        else:
+            check = f'{esc(e["link_check"])}: {esc(note)}'
         return (f'<article id="{esc(e["id"])}" data-subject="{esc(e["subject"])}" data-access="{esc(e["access"])}" data-kind="{esc(e["kind"])}">'
                 f'<h2>{link(e["url"], e["name"])}</h2>'
                 f'<p class="meta">{esc(label(e["subject"]))} · {esc(e["kind"])} · access: {esc(access)}</p>'
