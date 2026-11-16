@@ -98,7 +98,8 @@
         "null"
       ],
       "maxLength": 120,
-      "description": "Newest release tag and its date, or null when the project publishes none."
+      "description": "Newest release tag and its date, or null when the project publishes none.",
+      "minLength": 1
     },
     "open_issues": {
       "type": "integer",

@@ -215,7 +215,7 @@ def link_problems(entry, where):
 
 
 DATE_FIELDS = ("added", "date", "pushed", "reviewed_on", "last_commit", "last_checked", "counted_on")
-FUTURE_FIELDS = ("added", "last_checked", "counted_on")   # a check or count cannot postdate the build
+FUTURE_FIELDS = ("added", "last_checked", "counted_on", "last_commit")   # a check or count cannot postdate the build
 
 
 def date_problems(entry, where):
@@ -240,6 +240,9 @@ def rule_problems(entry, where):
         m = RANKING.search(entry.get(k) or "") if isinstance(entry.get(k), str) else None
         if m:
             errs.append(f"{where}.{k}: ranking or recommending word {m.group(0)!r}; describe, do not rank")
+    if entry.get("section") == "repos" and isinstance(entry.get("releases_last_year"), int) \
+            and entry["releases_last_year"] > 0 and not entry.get("latest_release"):
+        errs.append(f"{where}.latest_release: {entry['releases_last_year']} releases in the year but no latest release named")
     if entry.get("section") == "sources":
         if ("stars" in entry or "likes" in entry) and "counted_on" not in entry:
             errs.append(f"{where}: stars or likes need counted_on, the date they were counted")
@@ -339,6 +342,7 @@ form.filter label{display:flex;flex-direction:column;font-size:.85rem;color:var(
 form.filter input,form.filter select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);
 border-radius:6px;padding:0 8px;width:100%;height:2.4rem;margin-top:2px}
 #shown{color:var(--muted);font-size:.88rem;margin:0 0 4px}
+form.filter[hidden]{display:none}
 """
 
 # Same-origin, no tracking, nothing stored: hides the cards that do not match the search box and the two selects.
@@ -435,7 +439,7 @@ def card(e):
         rel += f' (latest {esc(e["latest_release"])})' if e["latest_release"] else " (none published)"
         return (f'<article id="{esc(e["id"])}"><h2>{link(e["url"], e["repo"])}</h2>'
                 f'<p class="meta">{esc(e["language"])} · {esc(e["license"])} · {e["stars_at_review"]:,} stars at review · last commit {esc(e["last_commit"])} · '
-                f'{e["open_issues"]:,} open issues · {rel}</p>'
+                f'{e["open_issues"]:,} open issue{"" if e["open_issues"] == 1 else "s"} · {rel}</p>'
                 f'<p><span class="tag">Reviewed {esc(e["reviewed_on"])}</span><span class="tag">focus: {esc(e["focus"])}</span></p><p>{esc(e["what_it_is"])}</p>'
                 f'<dl><dt>Measured against</dt><dd>{esc(e["measured_against"])}</dd><dt>Why this focus</dt><dd>{esc(e["focus_reason"])}</dd>'
                 f'<dt>Does not do</dt><dd>{esc(e["does_not_do"])}</dd><dt>Tests and CI</dt><dd>{esc(e["tests_ci"])}</dd></dl>{meta}</article>')
@@ -458,7 +462,7 @@ def source_filter(sources):
     return (f'<form id="filter" class="filter" role="search" hidden><label>Search<input type="search" name="q" autocomplete="off"></label>'
             f'<label>Subject<select name="subject"><option value="">All subjects</option>{options("subject")}</select></label>'
             f'<label>Access<select name="access"><option value="">Any access</option>{options("access")}</select></label></form>'
-            f'<p id="shown" aria-live="polite">{len(sources)} sources</p><p class="meta">Listed alphabetically within each subject; '
+            f'<p id="shown" aria-live="polite">{len(sources)} source{"" if len(sources) == 1 else "s"}</p><p class="meta">Listed alphabetically within each subject; '
             f'the order is not a ranking.</p><script src="/filter.js" defer></script>')
 
 
