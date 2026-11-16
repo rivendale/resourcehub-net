@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "gleif-golden-copy",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "GLEIF LEI Golden Copy",
+  "provides": "Files of Legal Entity Identifiers (LEIs) and their reference data, issued three times a day with delta files.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.gleif.org/en/lei-data/gleif-golden-copy/download-the-golden-copy"
+  ],
+  "subject": "sanctions-and-kyc",
+  "url": "https://www.gleif.org/en/lei-data/gleif-golden-copy/download-the-golden-copy"
+}

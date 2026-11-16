@@ -1,0 +1,23 @@
+{
+  "access": "free",
+  "access_note": "Noncommercial licence",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-prosusai-finbert",
+  "kind": "model",
+  "last_checked": "2026-11-16",
+  "license": "CC-BY-NC-SA-4.0",
+  "likes": 1308,
+  "link_check": "ok",
+  "name": "ProsusAI/finbert",
+  "provides": "A BERT model further trained on financial text and fine-tuned on the Financial PhraseBank for sentiment classification.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/ProsusAI/finbert"
+  ],
+  "subject": "finance-text-ml",
+  "url": "https://huggingface.co/ProsusAI/finbert"
+}

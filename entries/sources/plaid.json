@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Free sandbox; production is contracted",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "plaid",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Plaid",
+  "provides": "APIs that connect to bank and investment accounts with the account holder's permission: balances, transactions, holdings and identity checks.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://plaid.com/docs/"
+  ],
+  "subject": "account-data",
+  "url": "https://plaid.com/docs/"
+}

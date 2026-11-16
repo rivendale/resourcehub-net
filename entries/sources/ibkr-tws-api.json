@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Needs an Interactive Brokers account",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "ibkr-tws-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Interactive Brokers TWS API",
+  "provides": "IBKR's API for accounts, orders and market data through Trader Workstation or IB Gateway.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.interactivebrokers.com/en/trading/ib-api.php"
+  ],
+  "subject": "account-data",
+  "url": "https://www.interactivebrokers.com/en/trading/ib-api.php"
+}

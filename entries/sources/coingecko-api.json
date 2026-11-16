@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free key with limits; paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "coingecko-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "CoinGecko API",
+  "provides": "Crypto prices, market capitalisation, volume and coin metadata.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.coingecko.com/"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://docs.coingecko.com/"
+}

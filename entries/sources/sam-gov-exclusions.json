@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "unverified",
+  "id": "sam-gov-exclusions",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "link_note": "the page renders with JavaScript and the check read only its title, so the description is not verified against it.",
+  "name": "SAM.gov exclusions",
+  "provides": "The official U.S. public list of parties excluded from receiving federal contracts and awards.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://sam.gov/content/exclusions"
+  ],
+  "subject": "sanctions-and-kyc",
+  "url": "https://sam.gov/content/exclusions"
+}

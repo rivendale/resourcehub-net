@@ -30,6 +30,9 @@ reviews and AI demos, across any subject. Built for people and for agents: every
   entry checked against the page. A page that blocks automated checks or times out is kept only when
   otherwise known-good, with a `link_note`, and never as `verified`. Stars and likes are dated
   snapshots (`counted_on`), not scores. The page lists sources alphabetically within each subject.
+- People: official government designation lists (sanctions, exclusions) may be listed, described as
+  such; a source whose main use is searching people by name may not. Hosts held under this line are
+  in build.py `PEOPLE_SEARCH_HOSTS`, and an entry pointing at one fails the build.
 - Neutral wording: our own prose never ranks or recommends. In sources and repo reviews, "best",
   "leading", "top" and similar words fail the build (FAILURES.md F50); elsewhere review enforces it.
   Nothing here is investment, tax or legal advice; every page and index carries that disclaimer.

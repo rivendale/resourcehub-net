@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Contracted",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "tink",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Tink",
+  "provides": "Open banking APIs, mainly in Europe, for account checks and account and transaction data.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.tink.com/"
+  ],
+  "subject": "account-data",
+  "url": "https://docs.tink.com/"
+}

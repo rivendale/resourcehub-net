@@ -1,0 +1,21 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Key; paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "unverified",
+  "id": "blockchair-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "bot-blocked",
+  "link_note": "Returns HTTP 401 to automated checks; Blockchair documents its API at this address.",
+  "name": "Blockchair API",
+  "provides": "A multi-chain blockchain explorer API.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://blockchair.com/api"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://blockchair.com/api"
+}

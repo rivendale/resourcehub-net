@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free and paid tiers",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "tokenomist",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Tokenomist (formerly Token Unlocks)",
+  "provides": "Token unlock schedules, emissions, buybacks, burns and supply data, with an API.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.tokenomist.ai/overview"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://docs.tokenomist.ai/overview"
+}

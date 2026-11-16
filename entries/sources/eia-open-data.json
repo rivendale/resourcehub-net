@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "A free API key, under EIA's API terms of service",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "eia-open-data",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "EIA Open Data",
+  "provides": "U.S. Energy Information Administration data on energy production, prices, consumption and electricity, by API and bulk download.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.eia.gov/opendata/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.eia.gov/opendata/"
+}

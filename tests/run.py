@@ -326,6 +326,12 @@ p, _ = build(write_tree(mutate("sources", stars=184, counted_on="2026-10-29", li
                                link_check="bot-blocked", link_note="Returns 403 to automated checks.", claim="unverified",
                                access_note="Unofficial; read the provider's terms.")))
 check("source-optional-fields-ok", p.returncode == 0, p.stderr.strip()[:200])
+# F55: sources whose main use is searching people by name are refused; official designation lists pass
+for host_url in ("https://opencorporates.com/", "https://www.opensanctions.org/search", "https://adviserinfo.sec.gov/"):
+    expect_fail(f"people-search-{host_url.split('/')[2]}", mutate("sources", url=host_url, sources=[host_url]), "people by name")
+p, _ = build(write_tree(mutate("sources", url="https://ofac.treasury.gov/sanctions-list-service", subject="sanctions-and-kyc",
+                               sources=["https://ofac.treasury.gov/sanctions-list-service"])))
+check("designation-list-ok", p.returncode == 0, p.stderr.strip()[:200])
 expect_fail("ranking-word-source", mutate("sources", provides="The best source for rates."), "ranking")
 expect_fail("ranking-word-repo", mutate("repos", focus_reason="A leading library for this."), "ranking")
 expect_fail("ranking-word-top", mutate("sources", access_note="Top tier needs a key."), "ranking")

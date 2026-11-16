@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "chicago-fed-nfci",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Chicago Fed National Financial Conditions Index",
+  "provides": "Current data for the National Financial Conditions Index and its subindexes.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.chicagofed.org/research/data/nfci/current-data"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.chicagofed.org/research/data/nfci/current-data"
+}

@@ -1,0 +1,21 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Contracted",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "unverified",
+  "id": "mastercard-open-banking-us",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "link_note": "the page renders with JavaScript and the check read only its title, so the description is not verified against it.",
+  "name": "Mastercard Open Banking (U.S.)",
+  "provides": "U.S. open banking APIs for account access and verification, including the former Finicity products.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://developer.mastercard.com/open-banking-us/documentation/"
+  ],
+  "subject": "account-data",
+  "url": "https://developer.mastercard.com/open-banking-us/documentation/"
+}

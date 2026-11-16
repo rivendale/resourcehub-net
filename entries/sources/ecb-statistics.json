@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "ecb-statistics",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "ECB statistics",
+  "provides": "European Central Bank statistics on euro-area interest rates, money, banking and the economy.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.ecb.europa.eu/stats/html/index.en.html"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.ecb.europa.eu/stats/html/index.en.html"
+}

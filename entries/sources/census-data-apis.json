@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "An API key is requested from the same page",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "census-data-apis",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Census Bureau data APIs",
+  "provides": "The list of U.S. Census Bureau datasets available by API: population, economic and housing surveys.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.census.gov/data/developers/data-sets.html"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.census.gov/data/developers/data-sets.html"
+}

@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "solscan",
+  "kind": "portal",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Solscan",
+  "provides": "Solana explorer for transactions, blocks, tokens and supply.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://solscan.io/"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://solscan.io/"
+}

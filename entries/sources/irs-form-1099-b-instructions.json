@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "irs-form-1099-b-instructions",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "IRS Instructions for Form 1099-B",
+  "provides": "Instructions for brokers and barter exchanges reporting proceeds on Form 1099-B (2026 edition at check).",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.irs.gov/instructions/i1099b"
+  ],
+  "subject": "tax",
+  "url": "https://www.irs.gov/instructions/i1099b"
+}

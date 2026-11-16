@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "ofac-sanctions-list-service",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "OFAC Sanctions List Service",
+  "provides": "The official U.S. sanctions lists published by the Treasury's Office of Foreign Assets Control, including the SDN list and the consolidated non-SDN lists.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://ofac.treasury.gov/sanctions-list-service"
+  ],
+  "subject": "sanctions-and-kyc",
+  "url": "https://ofac.treasury.gov/sanctions-list-service"
+}

@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "access_note": "Free endpoints; a paid Pro API",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "defillama-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "DefiLlama API",
+  "provides": "Open API for DeFi data: total value locked, token prices, yields, volumes, fees and stablecoins.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://api-docs.defillama.com/"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://api-docs.defillama.com/"
+}

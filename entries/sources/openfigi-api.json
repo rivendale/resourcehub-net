@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free; an API key raises the request limits",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "openfigi-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "OpenFIGI API",
+  "provides": "Maps financial instruments to Financial Instrument Global Identifiers (FIGIs) and other market identifiers.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.openfigi.com/api"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.openfigi.com/api"
+}

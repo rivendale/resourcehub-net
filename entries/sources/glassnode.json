@@ -1,0 +1,21 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "unverified",
+  "id": "glassnode",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "bot-blocked",
+  "link_note": "Returns HTTP 403 to automated checks; Glassnode's documentation is hosted at this address.",
+  "name": "Glassnode",
+  "provides": "Onchain indicators and market metrics for crypto assets, with an API.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.glassnode.com/"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://docs.glassnode.com/"
+}

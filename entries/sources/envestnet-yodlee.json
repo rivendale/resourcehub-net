@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Contracted",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "envestnet-yodlee",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Envestnet Yodlee",
+  "provides": "Account aggregation and data enrichment APIs for banking and wealth platforms.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://developer.yodlee.com/"
+  ],
+  "subject": "account-data",
+  "url": "https://developer.yodlee.com/"
+}

@@ -1,0 +1,22 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-finance-alpaca",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "license": "MIT",
+  "likes": 166,
+  "link_check": "ok",
+  "name": "gbharti/finance-alpaca",
+  "provides": "Instruction-tuning data combining Stanford Alpaca, FiQA and about 1,300 pairs generated with GPT-3.5.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/datasets/gbharti/finance-alpaca"
+  ],
+  "subject": "finance-text-ml",
+  "url": "https://huggingface.co/datasets/gbharti/finance-alpaca"
+}

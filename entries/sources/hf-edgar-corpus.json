@@ -1,0 +1,22 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-edgar-corpus",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "license": "Apache-2.0",
+  "likes": 63,
+  "link_check": "ok",
+  "name": "eloukas/edgar-corpus",
+  "provides": "Annual reports of U.S. public companies from SEC EDGAR, 1993 to 2020, loadable by year (EDGAR-CORPUS, ECONLP 2021).",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/datasets/eloukas/edgar-corpus"
+  ],
+  "subject": "finance-text-ml",
+  "url": "https://huggingface.co/datasets/eloukas/edgar-corpus"
+}

@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "new-york-fed-data",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "New York Fed data and statistics",
+  "provides": "Reference rates (effective federal funds rate, OBFR, SOFR), desk operations and survey data from the Federal Reserve Bank of New York.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.newyorkfed.org/data-and-statistics"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.newyorkfed.org/data-and-statistics"
+}

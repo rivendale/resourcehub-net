@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free tier; paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "dune",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Dune",
+  "provides": "SQL analytics over indexed blockchain data, with an API to run queries.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.dune.com/"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://docs.dune.com/"
+}

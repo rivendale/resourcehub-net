@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "world-bank-open-data",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "World Bank Open Data",
+  "provides": "Development and macroeconomic indicators by country and theme, including the World Development Indicators.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://data.worldbank.org/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://data.worldbank.org/"
+}

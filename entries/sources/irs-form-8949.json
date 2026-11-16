@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "irs-form-8949",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "IRS Form 8949",
+  "provides": "The form used to list sales and other dispositions of capital assets, with its instructions and updates.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.irs.gov/forms-pubs/about-form-8949"
+  ],
+  "subject": "tax",
+  "url": "https://www.irs.gov/forms-pubs/about-form-8949"
+}

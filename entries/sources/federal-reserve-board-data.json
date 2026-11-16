@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "federal-reserve-board-data",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Federal Reserve Board data",
+  "provides": "The Board's statistical releases, such as bank assets and liabilities (H.8) and reserves (H.3), with a Data Download Program.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.federalreserve.gov/data.htm"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.federalreserve.gov/data.htm"
+}

@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "irs-publication-551",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "IRS Publication 551, Basis of Assets",
+  "provides": "IRS guidance on how the basis of property is figured and adjusted (12/2025 edition at check).",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.irs.gov/publications/p551"
+  ],
+  "subject": "tax",
+  "url": "https://www.irs.gov/publications/p551"
+}

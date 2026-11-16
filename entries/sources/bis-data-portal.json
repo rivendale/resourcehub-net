@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "bis-data-portal",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "BIS Data Portal",
+  "provides": "Bank for International Settlements statistics: credit, property prices, international banking and related series.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://data.bis.org/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://data.bis.org/"
+}

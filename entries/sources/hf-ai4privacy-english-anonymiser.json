@@ -1,0 +1,22 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-ai4privacy-english-anonymiser",
+  "kind": "model",
+  "last_checked": "2026-11-16",
+  "license": "MIT",
+  "likes": 21,
+  "link_check": "ok",
+  "name": "ai4privacy/llama-ai4privacy-english-anonymiser-openpii",
+  "provides": "A token-classification model that finds personal information in English text for redaction, with per-label evaluation figures on its card.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/ai4privacy/llama-ai4privacy-english-anonymiser-openpii"
+  ],
+  "subject": "privacy-tools",
+  "url": "https://huggingface.co/ai4privacy/llama-ai4privacy-english-anonymiser-openpii"
+}

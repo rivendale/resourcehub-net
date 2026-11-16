@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "access_note": "Issuer-reported",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "circle-transparency",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Circle transparency (USDC, EURC)",
+  "provides": "Circle's own disclosures on the reserves behind USDC and EURC: weekly reserve holdings and mint and burn flows, with monthly reports from an accounting firm.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.circle.com/transparency"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://www.circle.com/transparency"
+}

@@ -1,0 +1,23 @@
+{
+  "access": "free",
+  "access_note": "Noncommercial licence",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-financebench",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "license": "CC-BY-NC-4.0",
+  "likes": 145,
+  "link_check": "ok",
+  "name": "PatronusAI/financebench",
+  "provides": "An open sample of 150 annotated questions for testing language models on open-book question answering over public company filings.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/datasets/PatronusAI/financebench"
+  ],
+  "subject": "finance-text-ml",
+  "url": "https://huggingface.co/datasets/PatronusAI/financebench"
+}

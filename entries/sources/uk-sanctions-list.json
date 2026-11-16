@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "uk-sanctions-list",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "UK Sanctions List",
+  "provides": "The official list of people, entities and ships designated under UK sanctions regulations, and why. Since 28 January 2026 it is the only source for UK designations; the OFSI Consolidated List has closed.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.gov.uk/government/publications/the-uk-sanctions-list"
+  ],
+  "subject": "sanctions-and-kyc",
+  "url": "https://www.gov.uk/government/publications/the-uk-sanctions-list"
+}

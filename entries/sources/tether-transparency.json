@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "access_note": "Issuer-reported",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "tether-transparency",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Tether transparency",
+  "provides": "Tether's own figures on tokens in circulation, refreshed about daily, and its reserve reports.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://tether.to/en/transparency/"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://tether.to/en/transparency/"
+}

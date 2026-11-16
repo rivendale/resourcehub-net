@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "fincen-fbar",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "FBAR (FinCEN Form 114)",
+  "provides": "FinCEN's page on reporting foreign bank and financial accounts, filed electronically through the BSA E-Filing System.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.fincen.gov/report-foreign-bank-and-financial-accounts"
+  ],
+  "subject": "tax",
+  "url": "https://www.fincen.gov/report-foreign-bank-and-financial-accounts"
+}

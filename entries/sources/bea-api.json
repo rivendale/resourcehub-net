@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free registration with a name and email address",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "bea-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "BEA Data API",
+  "provides": "National, regional and industry economic accounts from the U.S. Bureau of Economic Analysis.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://apps.bea.gov/API/signup/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://apps.bea.gov/API/signup/"
+}
