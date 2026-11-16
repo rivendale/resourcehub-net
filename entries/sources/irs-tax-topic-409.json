@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "irs-tax-topic-409",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "IRS Tax Topic 409, Capital Gains and Losses",
+  "provides": "A short IRS summary of capital gains and losses and the rates that apply to them.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.irs.gov/taxtopics/tc409"
+  ],
+  "subject": "tax",
+  "url": "https://www.irs.gov/taxtopics/tc409"
+}

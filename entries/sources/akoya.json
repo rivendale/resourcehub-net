@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Contracted",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "akoya",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Akoya",
+  "provides": "A data access network that connects apps to financial institutions under the consumer's permission, for account verification and aggregation.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.akoya.com/"
+  ],
+  "subject": "account-data",
+  "url": "https://docs.akoya.com/"
+}

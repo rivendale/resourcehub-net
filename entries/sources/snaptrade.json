@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Personal API key, or a commercial agreement",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "snaptrade",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "SnapTrade",
+  "provides": "APIs that connect brokerage accounts to read holdings, balances and account data and, where enabled, place trades.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.snaptrade.com/"
+  ],
+  "subject": "account-data",
+  "url": "https://docs.snaptrade.com/"
+}

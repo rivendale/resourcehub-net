@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "imf-data",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "IMF Data",
+  "provides": "International Monetary Fund economic and financial data, with releases such as the World Economic Outlook and financial soundness indicators.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://data.imf.org/en"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://data.imf.org/en"
+}

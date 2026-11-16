@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "atlanta-fed-gdpnow",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Atlanta Fed GDPNow",
+  "provides": "A model estimate (nowcast) of current-quarter U.S. real GDP growth, updated ahead of the official release.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.atlantafed.org/research-and-data/data/gdpnow"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.atlantafed.org/research-and-data/data/gdpnow"
+}

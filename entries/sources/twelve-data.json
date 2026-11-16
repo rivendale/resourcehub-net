@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free key with limits; paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "twelve-data",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Twelve Data",
+  "provides": "Commercial API for stock, forex, crypto and fundamental data: real-time, historical and end-of-day.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://twelvedata.com/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://twelvedata.com/"
+}

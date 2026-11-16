@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "unverified",
+  "id": "un-sc-consolidated-list",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "bot-blocked",
+  "link_note": "Answers automated checks with HTTP 202 and an empty page; the UN publishes this list at this address.",
+  "name": "UN Security Council Consolidated List",
+  "provides": "The official consolidated list of individuals and entities subject to UN Security Council sanctions measures.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://main.un.org/securitycouncil/en/content/un-sc-consolidated-list"
+  ],
+  "subject": "sanctions-and-kyc",
+  "url": "https://main.un.org/securitycouncil/en/content/un-sc-consolidated-list"
+}

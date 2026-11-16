@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "census-american-housing-survey",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "American Housing Survey",
+  "provides": "A HUD-sponsored survey, run by the Census Bureau, of U.S. housing stock, costs and conditions.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.census.gov/programs-surveys/ahs.html"
+  ],
+  "subject": "real-estate",
+  "url": "https://www.census.gov/programs-surveys/ahs.html"
+}

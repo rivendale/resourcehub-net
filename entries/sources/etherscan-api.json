@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free key with limits; paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "etherscan-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Etherscan API",
+  "provides": "Ethereum explorer API for transactions, balances, tokens and contracts, across supported chains.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.etherscan.io/"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://docs.etherscan.io/"
+}

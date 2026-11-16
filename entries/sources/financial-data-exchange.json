@@ -1,0 +1,20 @@
+{
+  "access": "membership",
+  "access_note": "The developer portal is for members",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "financial-data-exchange",
+  "kind": "standard",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Financial Data Exchange (FDX)",
+  "provides": "An industry standard and API specification for consumer-permissioned financial data sharing in the U.S. and Canada.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://financialdataexchange.org/"
+  ],
+  "subject": "account-data",
+  "url": "https://financialdataexchange.org/"
+}

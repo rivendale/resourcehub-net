@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "unverified",
+  "id": "eu-consolidated-sanctions-list",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "link_note": "the page renders with JavaScript and the check read only its title, so the description is not verified against it.",
+  "name": "EU consolidated financial sanctions list",
+  "provides": "The official consolidated list of persons, groups and entities subject to EU financial sanctions, on the EU open data portal.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://data.europa.eu/data/datasets/consolidated-list-of-persons-groups-and-entities-subject-to-eu-financial-sanctions"
+  ],
+  "subject": "sanctions-and-kyc",
+  "url": "https://data.europa.eu/data/datasets/consolidated-list-of-persons-groups-and-entities-subject-to-eu-financial-sanctions"
+}

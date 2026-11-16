@@ -1,0 +1,22 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-financial-reports-sec",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "license": "Apache-2.0",
+  "likes": 78,
+  "link_check": "ok",
+  "name": "JanosAudran/financial-reports-sec",
+  "provides": "10-K filings from 1993 to 2020 split into sections and sentences, labelled by the market reaction around each filing date.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/datasets/JanosAudran/financial-reports-sec"
+  ],
+  "subject": "finance-text-ml",
+  "url": "https://huggingface.co/datasets/JanosAudran/financial-reports-sec"
+}

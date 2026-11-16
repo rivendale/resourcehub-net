@@ -1,0 +1,21 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Developer registration and approval; account endpoints need a Schwab account",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "unverified",
+  "id": "schwab-trader-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "link_note": "the page renders with JavaScript and the check read only its title, so the description is not verified against it.",
+  "name": "Charles Schwab Trader API",
+  "provides": "Schwab's developer API for brokerage account data, orders and market data.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://developer.schwab.com/products/trader-api"
+  ],
+  "subject": "account-data",
+  "url": "https://developer.schwab.com/products/trader-api"
+}

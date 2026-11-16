@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "harvard-jchs",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Harvard Joint Center for Housing Studies",
+  "provides": "Housing research reports, including the annual State of the Nation's Housing.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.jchs.harvard.edu/"
+  ],
+  "subject": "real-estate",
+  "url": "https://www.jchs.harvard.edu/"
+}

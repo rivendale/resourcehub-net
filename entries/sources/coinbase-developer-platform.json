@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "API key",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "coinbase-developer-platform",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Coinbase Developer Platform",
+  "provides": "Coinbase's APIs and SDKs for payments, wallets, stablecoins and onchain tools, under one API key.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.cdp.coinbase.com/"
+  ],
+  "subject": "account-data",
+  "url": "https://docs.cdp.coinbase.com/"
+}

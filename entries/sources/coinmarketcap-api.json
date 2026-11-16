@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free key with limits; paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "coinmarketcap-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "CoinMarketCap API",
+  "provides": "Crypto market data: real-time and historical prices, exchange and DEX data.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://coinmarketcap.com/api/"
+  ],
+  "subject": "crypto-and-onchain",
+  "url": "https://coinmarketcap.com/api/"
+}

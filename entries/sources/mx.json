@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Contracted",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "mx",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "MX",
+  "provides": "Account aggregation and financial data APIs for banks and fintech platforms.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://docs.mx.com/"
+  ],
+  "subject": "account-data",
+  "url": "https://docs.mx.com/"
+}

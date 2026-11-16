@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Free tier and paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "massive-polygon",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Massive (formerly Polygon.io)",
+  "provides": "Commercial API for real-time and historical stock and options data over REST and WebSockets; polygon.io now redirects here.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://massive.com/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://massive.com/"
+}

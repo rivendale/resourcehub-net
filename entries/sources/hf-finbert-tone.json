@@ -1,0 +1,22 @@
+{
+  "access": "free",
+  "access_note": "The card states no licence",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-finbert-tone",
+  "kind": "model",
+  "last_checked": "2026-11-16",
+  "likes": 234,
+  "link_check": "ok",
+  "name": "yiyanghkust/finbert-tone",
+  "provides": "A FinBERT model pre-trained on 10-K and 10-Q reports, earnings call transcripts and analyst reports, for tone classification of financial text.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/yiyanghkust/finbert-tone"
+  ],
+  "subject": "finance-text-ml",
+  "url": "https://huggingface.co/yiyanghkust/finbert-tone"
+}

@@ -1,0 +1,23 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "model-context-protocol",
+  "kind": "standard",
+  "last_checked": "2026-11-16",
+  "license": "Apache-2.0 (moving from MIT); docs CC-BY-4.0",
+  "link_check": "ok",
+  "name": "Model Context Protocol (MCP)",
+  "provides": "An open protocol for connecting AI applications to tools and data sources; the site carries the specification and guides.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://modelcontextprotocol.io/",
+    "https://github.com/modelcontextprotocol/modelcontextprotocol"
+  ],
+  "stars": 9702,
+  "subject": "agent-standards",
+  "url": "https://modelcontextprotocol.io/"
+}

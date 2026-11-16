@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "freddie-mac-pmms",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Freddie Mac Primary Mortgage Market Survey",
+  "provides": "Weekly U.S. average 30-year and 15-year fixed mortgage rates, downloadable back to 1971.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.freddiemac.com/pmms"
+  ],
+  "subject": "real-estate",
+  "url": "https://www.freddiemac.com/pmms"
+}

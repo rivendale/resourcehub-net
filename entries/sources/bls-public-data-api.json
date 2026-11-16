@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Version 1 needs no registration; version 2 needs a free registration key and allows more",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "bls-public-data-api",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "BLS Public Data API",
+  "provides": "Series from the U.S. Bureau of Labor Statistics, including employment, prices and pay.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.bls.gov/developers/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.bls.gov/developers/"
+}

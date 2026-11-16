@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "census-new-residential-construction",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Census New Residential Construction",
+  "provides": "Monthly U.S. housing permits, starts and completions.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.census.gov/construction/nrc/index.html"
+  ],
+  "subject": "real-estate",
+  "url": "https://www.census.gov/construction/nrc/index.html"
+}

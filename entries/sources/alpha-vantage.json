@@ -1,0 +1,20 @@
+{
+  "access": "free-with-key",
+  "access_note": "Free key with limits; paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "alpha-vantage",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Alpha Vantage",
+  "provides": "Commercial API for stock, options, forex, commodity and crypto prices, technical indicators and news, in JSON or CSV.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.alphavantage.co/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.alphavantage.co/"
+}

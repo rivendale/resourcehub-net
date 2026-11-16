@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "fdic-quarterly-banking-profile",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "FDIC Quarterly Banking Profile",
+  "provides": "A quarterly overview of the aggregate financial condition of FDIC-insured institutions, with the underlying data.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.fdic.gov/quarterly-banking-profile"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.fdic.gov/quarterly-banking-profile"
+}

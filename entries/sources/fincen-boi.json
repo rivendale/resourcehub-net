@@ -1,0 +1,20 @@
+{
+  "access": "restricted",
+  "access_note": "Guidance is public; reported ownership information is not a public lookup",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "fincen-boi",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "FinCEN Beneficial Ownership Information reporting",
+  "provides": "FinCEN's page on beneficial ownership reporting. Under the final rule effective 14 August 2026, U.S. companies are exempt; it sets out the requirements and deadlines that remain for foreign reporting companies.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.fincen.gov/boi"
+  ],
+  "subject": "sanctions-and-kyc",
+  "url": "https://www.fincen.gov/boi"
+}

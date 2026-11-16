@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "access_note": "No key; automated access must follow the SEC's fair-access guidelines",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "sec-edgar-apis",
+  "kind": "api",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "SEC EDGAR APIs (data.sec.gov)",
+  "provides": "JSON APIs for EDGAR company submissions and XBRL financial data from the U.S. Securities and Exchange Commission.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://data.sec.gov/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://data.sec.gov/"
+}

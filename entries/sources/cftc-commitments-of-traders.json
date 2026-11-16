@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "cftc-commitments-of-traders",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "CFTC Commitments of Traders",
+  "provides": "Reports on the positions held by categories of traders in U.S. futures and options markets, with historical files.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+}

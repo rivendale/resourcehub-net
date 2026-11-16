@@ -1,0 +1,23 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "x402",
+  "kind": "standard",
+  "last_checked": "2026-11-16",
+  "license": "Apache-2.0",
+  "link_check": "ok",
+  "name": "x402",
+  "provides": "An open standard for payments over HTTP, aimed at machine and agent payments, governed by the x402 Foundation.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://x402.org/",
+    "https://github.com/x402-foundation/x402"
+  ],
+  "stars": 6813,
+  "subject": "agent-standards",
+  "url": "https://x402.org/"
+}

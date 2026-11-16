@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "treasury-interest-rate-statistics",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "U.S. Treasury interest rate statistics",
+  "provides": "Daily Treasury par yield curve, real yield curve, bill and long-term rates, published by the Department of the Treasury.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics"
+}

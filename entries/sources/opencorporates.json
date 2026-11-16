@@ -1,0 +1,20 @@
+{
+  "access": "key-or-paid",
+  "access_note": "Free to search on the site; the API needs a key, with paid plans",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "opencorporates",
+  "kind": "portal",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "OpenCorporates",
+  "provides": "Company records gathered from official business registers across many jurisdictions.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://opencorporates.com/"
+  ],
+  "subject": "sanctions-and-kyc",
+  "url": "https://opencorporates.com/"
+}

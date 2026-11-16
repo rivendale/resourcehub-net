@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "access_note": "Headline data free; some reports for members",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "nar-research-statistics",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "NAR research and statistics",
+  "provides": "National Association of Realtors data on existing-home sales, median prices, affordability and pending sales.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.nar.realtor/research-and-statistics"
+  ],
+  "subject": "real-estate",
+  "url": "https://www.nar.realtor/research-and-statistics"
+}

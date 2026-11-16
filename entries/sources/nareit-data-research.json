@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "access_note": "Some content for members",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "nareit-data-research",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Nareit data and research",
+  "provides": "REIT performance data and research from Nareit, the REIT industry association.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.reit.com/data-research"
+  ],
+  "subject": "real-estate",
+  "url": "https://www.reit.com/data-research"
+}

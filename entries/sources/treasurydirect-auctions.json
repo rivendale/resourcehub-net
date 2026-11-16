@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "treasurydirect-auctions",
+  "kind": "portal",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "TreasuryDirect auctions",
+  "provides": "Announcements, results, schedules and a query tool for auctions of Treasury marketable securities.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.treasurydirect.gov/auctions/"
+  ],
+  "subject": "macro-and-markets",
+  "url": "https://www.treasurydirect.gov/auctions/"
+}

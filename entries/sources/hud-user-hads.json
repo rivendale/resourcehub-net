@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "unverified",
+  "id": "hud-user-hads",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "bot-blocked",
+  "link_note": "Answers automated checks with HTTP 202 and an empty page; HUD User hosts HADS at this address.",
+  "name": "HUD User Housing Affordability Data System (HADS)",
+  "provides": "HUD datasets built from the American Housing Survey to measure housing affordability.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.huduser.gov/portal/datasets/hads/hads.html"
+  ],
+  "subject": "real-estate",
+  "url": "https://www.huduser.gov/portal/datasets/hads/hads.html"
+}

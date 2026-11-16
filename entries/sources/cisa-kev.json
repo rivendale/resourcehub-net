@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "cisa-kev",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "CISA Known Exploited Vulnerabilities catalog",
+  "provides": "CISA's catalog of vulnerabilities known to be exploited in the wild, downloadable as CSV or JSON.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+  ],
+  "subject": "security-vulnerabilities",
+  "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+}

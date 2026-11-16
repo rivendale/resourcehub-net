@@ -1,0 +1,23 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "agent-name-service",
+  "kind": "standard",
+  "last_checked": "2026-11-16",
+  "license": "Apache-2.0",
+  "link_check": "ok",
+  "name": "Agent Name Service (ANS)",
+  "provides": "An open specification, hosted by the Linux Foundation, for naming, discovering and authenticating AI agents, bound to DNS domains.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://ansinfo.ai/",
+    "https://github.com/agentnameservice/ans-spec"
+  ],
+  "stars": 35,
+  "subject": "agent-standards",
+  "url": "https://ansinfo.ai/"
+}

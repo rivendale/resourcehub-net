@@ -1,0 +1,23 @@
+{
+  "access": "free",
+  "access_note": "Custom licence; commercial use by arrangement",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-pii-masking-400k",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "license": "Custom (see the card's LICENSE.md)",
+  "likes": 64,
+  "link_check": "ok",
+  "name": "ai4privacy/pii-masking-400k",
+  "provides": "Synthetic text in six languages labelled for personal information, for training and testing PII detection and masking.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/datasets/ai4privacy/pii-masking-400k"
+  ],
+  "subject": "privacy-tools",
+  "url": "https://huggingface.co/datasets/ai4privacy/pii-masking-400k"
+}

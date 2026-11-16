@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "irs-form-8938",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "IRS Form 8938",
+  "provides": "The statement of specified foreign financial assets (FATCA), with its instructions and updates.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.irs.gov/forms-pubs/about-form-8938"
+  ],
+  "subject": "tax",
+  "url": "https://www.irs.gov/forms-pubs/about-form-8938"
+}

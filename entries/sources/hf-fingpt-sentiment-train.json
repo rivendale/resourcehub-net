@@ -1,0 +1,22 @@
+{
+  "access": "free",
+  "access_note": "The card states no licence",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-fingpt-sentiment-train",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "likes": 38,
+  "link_check": "ok",
+  "name": "FinGPT/fingpt-sentiment-train",
+  "provides": "About 76,800 rows of financial sentiment training text from the FinGPT project; the card gives no further description.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/datasets/FinGPT/fingpt-sentiment-train"
+  ],
+  "subject": "finance-text-ml",
+  "url": "https://huggingface.co/datasets/FinGPT/fingpt-sentiment-train"
+}

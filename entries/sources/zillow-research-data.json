@@ -1,0 +1,20 @@
+{
+  "access": "free",
+  "access_note": "Free downloads under Zillow's terms of use",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "zillow-research-data",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "Zillow Research data",
+  "provides": "Downloadable housing data from Zillow, including the Zillow Home Value Index (ZHVI), rents, sales and inventory.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.zillow.com/research/data/"
+  ],
+  "subject": "real-estate",
+  "url": "https://www.zillow.com/research/data/"
+}

@@ -1,0 +1,22 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "counted_on": "2026-11-16",
+  "id": "hf-finer-139",
+  "kind": "dataset",
+  "last_checked": "2026-11-16",
+  "license": "CC-BY-SA-4.0",
+  "likes": 29,
+  "link_check": "ok",
+  "name": "nlpaueb/finer-139",
+  "provides": "About 1.1 million sentences from U.S. annual and quarterly reports annotated with XBRL tags, for numeric entity extraction.",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://huggingface.co/datasets/nlpaueb/finer-139"
+  ],
+  "subject": "finance-text-ml",
+  "url": "https://huggingface.co/datasets/nlpaueb/finer-139"
+}

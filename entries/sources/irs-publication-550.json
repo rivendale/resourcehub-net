@@ -1,0 +1,19 @@
+{
+  "access": "free",
+  "added": "2026-11-16",
+  "agent_written": true,
+  "claim": "verified",
+  "id": "irs-publication-550",
+  "kind": "reference",
+  "last_checked": "2026-11-16",
+  "link_check": "ok",
+  "name": "IRS Publication 550, Investment Income and Expenses",
+  "provides": "IRS guidance on investment income and expenses, including capital gains and losses and the wash sale rules (2025 edition at check).",
+  "reviewed_by": "local review panel",
+  "section": "sources",
+  "sources": [
+    "https://www.irs.gov/publications/p550"
+  ],
+  "subject": "tax",
+  "url": "https://www.irs.gov/publications/p550"
+}
