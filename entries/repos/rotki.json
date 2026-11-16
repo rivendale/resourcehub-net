@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "Its coverage is built around crypto accounts and onchain activity; it is not a general brokerage-statement tracker.",
+  "focus": "medium",
+  "focus_reason": "Local, encrypted storage and PnL reports fit the need for crypto holdings; for a household holding mainly securities the coverage is narrower. 11 releases in the year; 342 open issues.",
+  "id": "rotki",
+  "language": "Python",
+  "last_commit": "2026-11-16",
+  "latest_release": "v1.44.3 (2026-11-11)",
+  "license": "AGPL-3.0",
+  "measured_against": "Need: track a household's holdings and transactions across accounts over time, self-hosted, from statements or exports the owner supplies.",
+  "open_issues": 342,
+  "pushed": "2026-11-16",
+  "releases_last_year": 11,
+  "repo": "rotki/rotki",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/rotki/rotki"
+  ],
+  "stars_at_review": 4093,
+  "tests_ci": "CI workflows for backend, frontend unit, contract and end-to-end tests, plus benchmarks.",
+  "url": "https://github.com/rotki/rotki",
+  "what_it_is": "A self-hosted portfolio manager, accounting and analytics tool focused on crypto, keeping data encrypted and stored locally, with profit and loss reports."
+}

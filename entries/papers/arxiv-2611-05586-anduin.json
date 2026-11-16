@@ -1,0 +1,30 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Reza Ramji",
+    "Preston Vander Vos",
+    "Ziming Zeng",
+    "Duc V. Le"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-11-03",
+  "id": "arxiv-2611-05586-anduin",
+  "key_result": "On 66 million agent transactions across 16 blockchains, manipulating the proposed ratings cost 20% of buyers' spend, about 23 times harder than collaborative filtering.",
+  "link": "https://arxiv.org/abs/2611.05586",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2611.05586"
+  ],
+  "tags": [
+    "ai-agents",
+    "reputation",
+    "crypto"
+  ],
+  "takeaway": "Derives provider ratings for agent marketplaces from onchain payment histories, resistant to fake-account (Sybil) manipulation.",
+  "title": "Anduin: A sybil-resistant agentic marketplace reputation system",
+  "why_it_matters": "Agents choosing service providers need reputation that does not depend on human reviews or identity credentials."
+}

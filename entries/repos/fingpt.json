@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It is a research codebase built around notebooks rather than a packaged library, and it ships no evaluated, ready-to-use model of its own here.",
+  "focus": "low",
+  "focus_reason": "Useful as reference material, but no test workflow runs and the code is largely notebooks. One release in the year; 35 open issues.",
+  "id": "fingpt",
+  "language": "Python",
+  "last_commit": "2026-10-25",
+  "latest_release": "v1.0.0 (2026-04-08)",
+  "license": "MIT",
+  "measured_against": "Need: an open-source starting point for language models on financial text.",
+  "open_issues": 35,
+  "pushed": "2026-10-25",
+  "releases_last_year": 1,
+  "repo": "AI4Finance-Foundation/FinGPT",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/AI4Finance-Foundation/FinGPT"
+  ],
+  "stars_at_review": 21581,
+  "tests_ci": "A tests/ directory; the only GitHub workflow triages issues.",
+  "url": "https://github.com/AI4Finance-Foundation/FinGPT",
+  "what_it_is": "An open-source project for financial large language models: notebooks and scripts for fine-tuning open models on financial data, with released models on Hugging Face."
+}

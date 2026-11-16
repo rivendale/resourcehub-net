@@ -1,0 +1,27 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Wenbin Wu"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-11-01",
+  "id": "arxiv-2611-01656-aida-ai-outages-mev",
+  "key_result": "AI outages stall new trading code while deployed bots keep trading; execution stayed concentrated, with fifty addresses executing two thirds of verified MEV trades.",
+  "link": "https://arxiv.org/abs/2611.01656",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2611.01656"
+  ],
+  "tags": [
+    "ai-reliability",
+    "crypto",
+    "dataset"
+  ],
+  "takeaway": "Builds a registry of 5,868 outage incidents across 30 AI providers and pairs it with onchain trading data to see what outages change.",
+  "title": "AIDA: An AI Outage Registry with Evidence from On-Chain MEV",
+  "why_it_matters": "It is a dataset of when AI services fail, with an application to automated trading."
+}

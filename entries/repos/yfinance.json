@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It has no agreement with the data provider, so access can change without notice, and the data's terms are Yahoo's.",
+  "focus": "low",
+  "focus_reason": "Convenient, but the stated need asks for sources with clear terms: the data is Yahoo's under personal-use terms, and its test workflow is switched off.",
+  "id": "yfinance",
+  "language": "Python",
+  "last_commit": "2026-11-07",
+  "latest_release": "1.8.0 (2026-11-03)",
+  "license": "Apache-2.0",
+  "measured_against": "Need: fetch market and economic data programmatically for research, from sources whose terms are clear.",
+  "open_issues": 53,
+  "pushed": "2026-11-15",
+  "releases_last_year": 13,
+  "repo": "ranaroussi/yfinance",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/ranaroussi/yfinance"
+  ],
+  "stars_at_review": 25935,
+  "tests_ci": "A tests/ directory, but the pytest workflow is disabled; CI runs ruff and pyright.",
+  "url": "https://github.com/ranaroussi/yfinance",
+  "what_it_is": "An unofficial Python wrapper that downloads market data from Yahoo Finance. Unofficial; read the provider's terms: the README says it is not affiliated with Yahoo and that Yahoo's API is intended for personal use only."
+}

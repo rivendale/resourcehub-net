@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It needs historical data loaded into its own bundle format and does not supply market data.",
+  "focus": "medium",
+  "focus_reason": "A tested, event-driven backtester with 2 open issues and a release on 2026-10-25; it needs data loaded into bundles before any test runs.",
+  "id": "zipline-reloaded",
+  "language": "Python",
+  "last_commit": "2026-11-02",
+  "latest_release": "3.2.1 (2026-10-25)",
+  "license": "Apache-2.0",
+  "measured_against": "Need: test a rule-based portfolio or trading idea against historical data.",
+  "open_issues": 2,
+  "pushed": "2026-11-02",
+  "releases_last_year": 2,
+  "repo": "stefan-jansen/zipline-reloaded",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/stefan-jansen/zipline-reloaded"
+  ],
+  "stars_at_review": 2017,
+  "tests_ci": "A tests/ directory; quick and full CI test workflows and wheel builds.",
+  "url": "https://github.com/stefan-jansen/zipline-reloaded",
+  "what_it_is": "A maintained fork of Zipline, the event-driven backtesting library first built at Quantopian."
+}

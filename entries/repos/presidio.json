@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "Detection is pattern- and model-based and can miss or over-match; it does not guarantee anonymity.",
+  "focus": "high",
+  "focus_reason": "It is built for exactly this need, with separate analyzer and anonymizer packages and tests in CI. 6 releases in the year; 108 open issues.",
+  "id": "presidio",
+  "language": "Python",
+  "last_commit": "2026-11-14",
+  "latest_release": "2.2.366 (2026-10-27)",
+  "license": "MIT",
+  "measured_against": "Need: find and redact personal information in text before it is shared or stored.",
+  "open_issues": 108,
+  "pushed": "2026-11-14",
+  "releases_last_year": 6,
+  "repo": "data-privacy-stack/presidio",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/data-privacy-stack/presidio"
+  ],
+  "stars_at_review": 11905,
+  "tests_ci": "Tests inside each package and an e2e-tests/ directory; CI and CodeQL workflows.",
+  "url": "https://github.com/data-privacy-stack/presidio",
+  "what_it_is": "A framework for detecting, redacting, masking and anonymizing personal information in text, images and structured data. The repository moved from microsoft/presidio."
+}

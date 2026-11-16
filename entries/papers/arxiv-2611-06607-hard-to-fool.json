@@ -1,0 +1,27 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Henry Zhang"
+  ],
+  "claim": "unverified",
+  "code": "https://github.com/henryzhangpku/autonomous-quant-researcher",
+  "date": "2026-11-04",
+  "id": "arxiv-2611-06607-hard-to-fool",
+  "key_result": "Acceptance requires positive net edge after costs, a positive bootstrap lower bound, survival at higher costs and per-year stability, with a holdout that can be opened once.",
+  "link": "https://arxiv.org/abs/2611.06607",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2611.06607"
+  ],
+  "tags": [
+    "ai-agents",
+    "finance",
+    "backtesting"
+  ],
+  "takeaway": "Describes an open-source research loop in which a language model proposes strategy changes as fixed-vocabulary JSON and only trusted code evaluates them.",
+  "title": "Hard to Fool: A Bounded LLM Research Loop for Quantitative Finance, and What Two Dozen Campaigns Found",
+  "why_it_matters": "Agentic loops that keep whatever improves a backtest manufacture false discoveries; this one is built to refuse them."
+}

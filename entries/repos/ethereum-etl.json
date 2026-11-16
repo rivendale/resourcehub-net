@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It needs the user's own Ethereum node or provider and covers Ethereum only.",
+  "focus": "low",
+  "focus_reason": "It fits the need on paper, but there has been no release since 2024-04-11, no GitHub workflow runs its tests, and 118 issues are open.",
+  "id": "ethereum-etl",
+  "language": "Python",
+  "last_commit": "2026-01-25",
+  "latest_release": "v2.4.2 (2024-04-11)",
+  "license": "MIT",
+  "measured_against": "Need: extract onchain transaction data into files or a database.",
+  "open_issues": 118,
+  "pushed": "2026-01-25",
+  "releases_last_year": 0,
+  "repo": "blockchain-etl/ethereum-etl",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/blockchain-etl/ethereum-etl"
+  ],
+  "stars_at_review": 3133,
+  "tests_ci": "A tests/ directory and a Travis CI file; the GitHub workflows only publish to Docker Hub and PyPI.",
+  "url": "https://github.com/blockchain-etl/ethereum-etl",
+  "what_it_is": "Python scripts that export Ethereum blocks, transactions, token transfers, receipts and logs to CSV or relational databases."
+}

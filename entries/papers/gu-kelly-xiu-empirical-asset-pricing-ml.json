@@ -1,0 +1,31 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Shihao Gu",
+    "Bryan Kelly",
+    "Dacheng Xiu"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2020",
+  "id": "gu-kelly-xiu-empirical-asset-pricing-ml",
+  "key_result": "Trees and neural networks gave the largest gains, from nonlinear interactions between predictors; all methods agree on momentum, liquidity and volatility signals.",
+  "link": "https://doi.org/10.1093/rfs/hhaa009",
+  "publication": "peer-reviewed",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://doi.org/10.1093/rfs/hhaa009",
+    "https://www.nber.org/papers/w25398",
+    "https://papers.ssrn.com/abstract=3159577"
+  ],
+  "tags": [
+    "finance",
+    "asset-pricing",
+    "machine-learning"
+  ],
+  "takeaway": "Compares machine-learning methods for measuring asset risk premia against regression baselines.",
+  "title": "Empirical Asset Pricing via Machine Learning",
+  "why_it_matters": "A reference study for machine learning in return prediction, published in the Review of Financial Studies."
+}

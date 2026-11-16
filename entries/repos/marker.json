@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "Its model weights are free only for research, personal use and organisations under 5 million dollars in funding or revenue; other commercial use needs a paid licence.",
+  "focus": "medium",
+  "focus_reason": "Output quality targets the need, but the weights' licence differs from the code's. 4 releases in the year; 80 open issues.",
+  "id": "marker",
+  "language": "Python",
+  "last_commit": "2026-11-14",
+  "latest_release": "v2.2.0 (2026-11-12)",
+  "license": "Apache-2.0 (code); modified OpenRAIL-M (model weights)",
+  "measured_against": "Need: turn statements and filings (PDF and office files) into text and tables a program can read, locally.",
+  "open_issues": 80,
+  "pushed": "2026-11-14",
+  "releases_last_year": 4,
+  "repo": "datalab-to/marker",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/datalab-to/marker"
+  ],
+  "stars_at_review": 40942,
+  "tests_ci": "A tests/ directory and a CI workflow.",
+  "url": "https://github.com/datalab-to/marker",
+  "what_it_is": "Converts PDF, image, PPTX, DOCX, XLSX, HTML and EPUB files to Markdown, JSON or HTML, including tables and equations, on GPU, CPU or MPS."
+}

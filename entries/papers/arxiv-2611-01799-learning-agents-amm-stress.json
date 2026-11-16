@@ -1,0 +1,27 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Irene Aldridge"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-11-01",
+  "id": "arxiv-2611-01799-learning-agents-amm-stress",
+  "key_result": "Herd- and arbitrage-dominated markets of equal size have identical return distributions and turnover, yet stress episodes differ in length; maker-taker pricing, not a uniform fee, restores stability.",
+  "link": "https://arxiv.org/abs/2611.01799",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2611.01799"
+  ],
+  "tags": [
+    "market-microstructure",
+    "crypto",
+    "theory"
+  ],
+  "takeaway": "Analyses the feedback that learning trading agents create on a constant-product automated market maker.",
+  "title": "Learning AI Agents, Market Makers, and Stress in Automated Markets",
+  "why_it_matters": "It argues that common risk rules cannot tell herd-driven from arbitrage-driven markets apart."
+}

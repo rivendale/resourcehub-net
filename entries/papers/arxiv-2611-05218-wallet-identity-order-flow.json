@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Jingqiu Ding",
+    "Daojing Zhai"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-11-03",
+  "id": "arxiv-2611-05218-wallet-identity-order-flow",
+  "key_result": "Over July 1-27, 2026 (17.1 billion messages, 147,113 wallets), markout rankings of wallets persisted across adjacent ten-day windows (Spearman rho 0.52).",
+  "link": "https://arxiv.org/abs/2611.05218",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2611.05218"
+  ],
+  "tags": [
+    "market-microstructure",
+    "crypto",
+    "prediction"
+  ],
+  "takeaway": "Reconstructs full order books from a public exchange record that exposes persistent pseudonymous wallet addresses and tests wallet history as a predictive feature.",
+  "title": "Beyond Anonymous Order Flow: Wallet Identity as a Feature for Short-Horizon Return Prediction",
+  "why_it_matters": "Most order-book research assumes anonymous order flow; this record makes the account dimension measurable. Accepted at ACM ICAIF 2026."
+}

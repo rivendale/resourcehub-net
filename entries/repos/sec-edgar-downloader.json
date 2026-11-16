@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "It does not parse filings or extract financial data; the files are left as EDGAR serves them.",
+  "focus": "medium",
+  "focus_reason": "Downloading is half the need; parsing has to come from elsewhere. One release in the year; last commit 2026-02-02.",
+  "id": "sec-edgar-downloader",
+  "language": "Python",
+  "last_commit": "2026-02-02",
+  "latest_release": "5.1.0 (2026-02-02)",
+  "license": "MIT",
+  "measured_against": "Need: read SEC EDGAR filings and their financial data into structured form.",
+  "open_issues": 27,
+  "pushed": "2026-06-22",
+  "releases_last_year": 1,
+  "repo": "jadchaar/sec-edgar-downloader",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/jadchaar/sec-edgar-downloader"
+  ],
+  "stars_at_review": 723,
+  "tests_ci": "A tests/ directory and a continuous-integration workflow.",
+  "url": "https://github.com/jadchaar/sec-edgar-downloader",
+  "what_it_is": "A Python package that downloads filings from SEC EDGAR to disk."
+}

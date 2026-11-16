@@ -1,0 +1,32 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Pietro Saggese",
+    "Michael Sigmund",
+    "Burkhard Raunig",
+    "Esther Segalla",
+    "Bernhard Haslhofer",
+    "Christos Makridis"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-07-09",
+  "id": "arxiv-2607-08524-stablecoin-casps-austria",
+  "key_result": "Austrian providers intermediate roughly 30 billion dollars in cumulative external transfers; retail-like and institutional flows respond differently around stress events such as the FTX bankruptcy.",
+  "link": "https://arxiv.org/abs/2607.08524",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2607.08524"
+  ],
+  "tags": [
+    "stablecoins",
+    "financial-stability",
+    "crypto"
+  ],
+  "takeaway": "Uses a regulatory registry of the onchain addresses of every crypto-asset service provider in Austria to trace their Bitcoin, Ether, USDT and USDC flows.",
+  "title": "Stablecoin Integration and Stress Transmission Through Crypto-Asset Service Providers: Evidence from Austria",
+  "why_it_matters": "Direct identification of providers replaces the indirect proxies most stablecoin studies rely on."
+}

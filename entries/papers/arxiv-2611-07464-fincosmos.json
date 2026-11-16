@@ -1,0 +1,43 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "authors": [
+    "Yupeng Cao",
+    "Xueqing Peng",
+    "Lingfei Qian",
+    "Haohang Li",
+    "Yangyang Yu",
+    "Anke Xu",
+    "Wenbo Cao",
+    "Yan Wang",
+    "Yuechen Jiang",
+    "Yuyan Wang",
+    "Zhuohan Xie",
+    "Yankai Chen",
+    "Zehan Li",
+    "Jimin Huang",
+    "Xue Liu",
+    "Jian-Yun Nie",
+    "Sophia Ananiadou"
+  ],
+  "claim": "unverified",
+  "code": null,
+  "date": "2026-11-05",
+  "id": "arxiv-2611-07464-fincosmos",
+  "key_result": "Grading needs no reference answer: programs check point-in-time correctness, recompute every reported metric and compare the strategy with the hidden specification.",
+  "link": "https://arxiv.org/abs/2611.07464",
+  "publication": "preprint",
+  "reviewed_by": "local review panel",
+  "section": "papers",
+  "sources": [
+    "https://arxiv.org/abs/2611.07464"
+  ],
+  "tags": [
+    "ai-agents",
+    "finance",
+    "evaluation"
+  ],
+  "takeaway": "Proposes testing finance agents in an open world: they must find data on the Web, build their own backtest and satisfy a simulated user with a hidden strategy.",
+  "title": "FINCOSMOS: An Open-World Evaluation Paradigm for Agents in Finance",
+  "why_it_matters": "Closed benchmarks remove the failures that matter in finance, such as unverified data or a backtest that uses the future; this design measures them."
+}

@@ -1,0 +1,28 @@
+{
+  "added": "2026-11-16",
+  "agent_written": true,
+  "does_not_do": "Private endpoints need the user's exchange API keys; each exchange's terms apply, and it is not a data source of its own.",
+  "focus": "medium",
+  "focus_reason": "Public market data from many exchanges through one interface fits the need; much of the surface is trading. 75 releases in the year; 260 open issues.",
+  "id": "ccxt",
+  "language": "Python",
+  "last_commit": "2026-11-16",
+  "latest_release": "v4.5.92 (2026-11-04)",
+  "license": "MIT",
+  "measured_against": "Need: fetch market and economic data programmatically for research, from sources whose terms are clear.",
+  "open_issues": 260,
+  "pushed": "2026-11-16",
+  "releases_last_year": 75,
+  "repo": "ccxt/ccxt",
+  "reviewed": true,
+  "reviewed_by": "local review panel",
+  "reviewed_on": "2026-11-16",
+  "section": "repos",
+  "sources": [
+    "https://github.com/ccxt/ccxt"
+  ],
+  "stars_at_review": 44895,
+  "tests_ci": "Per-language CI workflows (JavaScript, Python, PHP, C#, Go, Java, Rust).",
+  "url": "https://github.com/ccxt/ccxt",
+  "what_it_is": "A unified API for more than 100 crypto exchanges and prediction markets, in seven languages, for market data and trading."
+}
