@@ -325,7 +325,7 @@ font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
 .wrap{max-width:860px;margin:0 auto;padding:24px 16px 64px}
 header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:12px}
 header a.home{font-weight:700;font-size:1.15rem;color:var(--fg);text-decoration:none}
-nav a{margin-right:14px;color:var(--muted);text-decoration:none}nav a[aria-current]{color:var(--fg);font-weight:600}
+nav a{margin-right:14px;color:var(--muted);text-decoration:none;white-space:nowrap}nav a[aria-current]{color:var(--fg);font-weight:600}
 a{color:var(--accent)}h1{font-size:1.6rem;margin:28px 0 6px}p.lede{color:var(--muted);margin:0 0 20px}
 article{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;margin:14px 0}
 article h2{font-size:1.1rem;margin:0 0 4px}article p{margin:6px 0}.meta{color:var(--muted);font-size:.88rem}
@@ -334,10 +334,10 @@ article h2{font-size:1.1rem;margin:0 0 4px}article p{margin:6px 0}.meta{color:va
 .sections{display:grid;gap:12px}.sections article{margin:0}footer{margin-top:40px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:12px}
 dt{font-weight:600;margin-top:6px}dd{margin:0 0 4px}
 .disclaimer{color:var(--fg)}
-form.filter{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:end;margin:0 0 8px}
+form.filter{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-start;margin:0 0 8px}
 form.filter label{display:flex;flex-direction:column;font-size:.85rem;color:var(--muted);flex:1 1 160px;min-width:0}
 form.filter input,form.filter select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);
-border-radius:6px;padding:6px 8px;width:100%}
+border-radius:6px;padding:0 8px;width:100%;height:2.4rem;margin-top:2px}
 #shown{color:var(--muted);font-size:.88rem;margin:0 0 4px}
 """
 
