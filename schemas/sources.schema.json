@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://resourcehub.net/schemas/sources.schema.json",
+  "title": "resourcehub.net sources entry",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "An official data feed, API, dataset, model, standard or reference, with how to access it and when its link was last checked. A listing, not an endorsement or a ranking.",
+  "required": [
+    "name",
+    "url",
+    "subject",
+    "kind",
+    "provides",
+    "access",
+    "last_checked",
+    "link_check",
+    "claim"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "url": {
+      "type": "string",
+      "pattern": "^https://[^\\s]+$",
+      "description": "The provider's own page for the source."
+    },
+    "subject": {
+      "type": "string",
+      "enum": [
+        "account-data",
+        "agent-standards",
+        "crypto-and-onchain",
+        "finance-text-ml",
+        "macro-and-markets",
+        "privacy-tools",
+        "real-estate",
+        "sanctions-and-kyc",
+        "security-vulnerabilities",
+        "tax"
+      ],
+      "description": "What the source is about; the page filters on it."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "api",
+        "dataset",
+        "model",
+        "portal",
+        "reference",
+        "standard"
+      ]
+    },
+    "provides": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "What it provides, in our own words."
+    },
+    "access": {
+      "type": "string",
+      "enum": [
+        "free",
+        "free-with-key",
+        "key-or-paid",
+        "paid",
+        "membership",
+        "restricted"
+      ],
+      "description": "free: no account; free-with-key: a free registration or key; key-or-paid: a key, with paid tiers or contract terms; paid; membership; restricted: not open to the public."
+    },
+    "access_note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "The licence of the model, dataset or reference repository, as stated on its card or repository."
+    },
+    "stars": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "GitHub stars of the reference repository on counted_on: a snapshot, not a quality score."
+    },
+    "likes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Hugging Face likes on counted_on: a snapshot, not a quality score."
+    },
+    "counted_on": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Date stars or likes were counted."
+    },
+    "last_checked": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "US Eastern date the link was opened and the entry checked against the page."
+    },
+    "link_check": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "bot-blocked",
+        "timeout"
+      ],
+      "description": "ok: the page opened and was read. bot-blocked or timeout: kept only when otherwise known-good; link_note says why."
+    },
+    "link_note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "claim": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "unverified",
+        "hype",
+        "opinion"
+      ],
+      "description": "verified: the description was checked against the page on last_checked; unverified otherwise."
+    }
+  }
+}

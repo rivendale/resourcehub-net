@@ -21,6 +21,7 @@
     "section": {
       "type": "string",
       "enum": [
+        "sources",
         "papers",
         "people",
         "repos",
