@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build resourcehub.net: a public index of research papers, people to follow, repo reviews and demos.
+"""Build resourcehub.net: a public directory of data sources, research papers, people to follow, repo reviews and demos.
 Python standard library only.
 
     build.py [--entries entries] [--schemas schemas] [--out site]
@@ -31,11 +31,21 @@ import urllib.parse
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE = "https://resourcehub.net"
 SECTIONS = [
+    ("sources", "Sources", "Official data feeds, APIs, datasets, models, standards and references across subjects, each with "
+                "how to access it and when its link was last checked."),
     ("papers", "Papers", "Research papers worth reading, linked to the primary source, across every field."),
     ("people", "People", "People producing consistently useful public work, and where to start with each."),
     ("repos", "Repo reviews", "Open-source repositories, each marked Reviewed with a focus level against a stated need."),
     ("demos", "Demos", "Dated demonstrations of what AI systems can do, as a record of progress."),
 ]
+# On every page, in index.json, llms.txt, llms-full.txt and the feed.
+DISCLAIMER = ("Data only. Entries describe what a source or project is, how to reach it and what it found; nothing here is "
+              "investment, tax or legal advice, a recommendation or a ranking. Read each provider's own terms: access rules "
+              "and licences change.")
+# Listing language stays neutral: these words rank or recommend, so the build refuses them in our own prose.
+RANKING = re.compile(r"\b(best|leading|top|number one|recommended|must-have|world-class|premier)\b", re.I)
+RANKING_FIELDS = {"sources": ("provides", "access_note", "link_note"),
+                  "repos": ("what_it_is", "focus_reason", "measured_against", "tests_ci", "does_not_do")}
 TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly", "tinyurl.com", "goo.gl"}
 # Query keys a published link may carry. An allow-list, because nine review rounds showed a blocklist of
 # identifying keys never converges (authToken, PHPSESSID, ck_subscriber_id, a custom-domain substack's r...).
@@ -204,7 +214,8 @@ def link_problems(entry, where):
     return errs
 
 
-DATE_FIELDS = ("added", "date", "pushed", "reviewed_on")
+DATE_FIELDS = ("added", "date", "pushed", "reviewed_on", "last_commit", "last_checked", "counted_on")
+FUTURE_FIELDS = ("added", "last_checked", "counted_on")   # a check or count cannot postdate the build
 
 
 def date_problems(entry, where):
@@ -222,12 +233,30 @@ def date_problems(entry, where):
     return errs
 
 
+def rule_problems(entry, where):
+    """Rules that span fields: neutral wording, dated snapshots, and an explained, unverified link failure."""
+    errs = []
+    for k in RANKING_FIELDS.get(entry.get("section"), ()):
+        m = RANKING.search(entry.get(k) or "") if isinstance(entry.get(k), str) else None
+        if m:
+            errs.append(f"{where}.{k}: ranking or recommending word {m.group(0)!r}; describe, do not rank")
+    if entry.get("section") == "sources":
+        if ("stars" in entry or "likes" in entry) and "counted_on" not in entry:
+            errs.append(f"{where}: stars or likes need counted_on, the date they were counted")
+        if entry.get("link_check") in ("bot-blocked", "timeout"):
+            if "link_note" not in entry:
+                errs.append(f"{where}: link_check {entry['link_check']!r} needs a link_note saying why the entry is kept")
+            if entry.get("claim") == "verified":
+                errs.append(f"{where}: claim cannot be 'verified' when the page could not be read (link_check {entry['link_check']!r})")
+    return errs
+
+
 # ---- load ----------------------------------------------------------------------------------------
 
 def load_entries(entries_dir, schemas):
     entries, seen, errs = {s: [] for s, _, _ in SECTIONS}, {}, []
     known = {s for s, _, _ in SECTIONS}
-    for name in sorted(os.listdir(entries_dir)):   # nothing outside the four sections is silently skipped
+    for name in sorted(os.listdir(entries_dir)):   # nothing outside the sections is silently skipped
         if name not in known and name != ".gitkeep":
             errs.append(f"{name}: unexpected entry path; entries live in {', '.join(sorted(known))}/")
     for sec in sorted(known - set(os.listdir(entries_dir))):
@@ -256,17 +285,18 @@ def load_entries(entries_dir, schemas):
             if e.get("section") != sec:
                 errs.append(f"{path}: section is {e.get('section')!r} but the file is under {sec}/")
                 continue
-            problems = validate(e, schemas[sec], path) + link_problems(e, path) + date_problems(e, path)
+            problems = validate(e, schemas[sec], path) + link_problems(e, path) + date_problems(e, path) + rule_problems(e, path)
             eid = e.get("id") if isinstance(e.get("id"), str) else None   # validate() already reported a bad type
             if eid is not None and eid != name[:-5]:
                 problems.append(f"{path}: id {eid!r} differs from the file name")
-            if isinstance(e.get("added"), str) and re.match(r"^\d{4}-\d{2}-\d{2}$", e["added"]):
-                try:
-                    # One day of slack: an author east of UTC writes today's date before UTC does.
-                    if datetime.date.fromisoformat(e["added"]) > today() + datetime.timedelta(days=1):
-                        problems.append(f"{path}: added {e['added']} is in the future")
-                except ValueError:
-                    problems.append(f"{path}: added {e['added']!r} is not a real date")
+            for k in FUTURE_FIELDS:
+                if isinstance(e.get(k), str) and re.match(r"^\d{4}-\d{2}-\d{2}$", e[k], re.ASCII):
+                    try:
+                        # One day of slack: an author east of UTC writes today's date before UTC does.
+                        if datetime.date.fromisoformat(e[k]) > today() + datetime.timedelta(days=1):
+                            problems.append(f"{path}: {k} {e[k]} is in the future")
+                    except ValueError:
+                        pass   # date_problems() already reported it
             if eid is not None and eid in seen:
                 problems.append(f"{path}: id {eid!r} is also used by {seen[eid]}")
             if eid is not None:
@@ -279,6 +309,8 @@ def load_entries(entries_dir, schemas):
         die("refusing to build:\n  " + "\n  ".join(errs))
     for sec in entries:
         entries[sec].sort(key=lambda e: (e["added"], e["id"]), reverse=True)
+    # The directory lists alphabetically within each subject: a date order would read as a ranking.
+    entries["sources"].sort(key=lambda e: (e["subject"], e["name"].casefold(), e["id"]))
     return entries
 
 
@@ -301,7 +333,44 @@ article h2{font-size:1.1rem;margin:0 0 4px}article p{margin:6px 0}.meta{color:va
 .claim-verified{color:var(--v)}.claim-unverified{color:var(--u)}.claim-hype{color:var(--h)}.claim-opinion{color:var(--o)}
 .sections{display:grid;gap:12px}.sections article{margin:0}footer{margin-top:40px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:12px}
 dt{font-weight:600;margin-top:6px}dd{margin:0 0 4px}
+.disclaimer{color:var(--fg)}
+form.filter{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:end;margin:0 0 8px}
+form.filter label{display:flex;flex-direction:column;font-size:.85rem;color:var(--muted);flex:1 1 160px;min-width:0}
+form.filter input,form.filter select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);
+border-radius:6px;padding:6px 8px;width:100%}
+#shown{color:var(--muted);font-size:.88rem;margin:0 0 4px}
 """
+
+# Same-origin, no tracking, nothing stored: hides the cards that do not match the search box and the two selects.
+FILTER_JS = """(function () {
+  var form = document.getElementById("filter");
+  if (!form) return;
+  var cards = Array.prototype.slice.call(document.querySelectorAll("article[data-subject]"));
+  var shown = document.getElementById("shown");
+  function apply() {
+    var q = form.elements.q.value.trim().toLowerCase();
+    var subject = form.elements.subject.value, access = form.elements.access.value, n = 0;
+    cards.forEach(function (c) {
+      var ok = (!subject || c.getAttribute("data-subject") === subject) &&
+               (!access || c.getAttribute("data-access") === access) &&
+               (!q || c.textContent.toLowerCase().indexOf(q) !== -1);
+      c.hidden = !ok;
+      if (ok) n++;
+    });
+    shown.textContent = n + " of " + cards.length + " shown";
+  }
+  form.addEventListener("input", apply);
+  form.addEventListener("change", apply);
+  form.addEventListener("submit", function (e) { e.preventDefault(); apply(); });
+  form.hidden = false;
+  apply();
+})();
+"""
+
+
+def label(slug):
+    """Display form of an enum value: macro-and-markets -> Macro and markets."""
+    return slug.replace("-", " ").capitalize()
 
 
 def page(title, body, current=None, desc=""):
@@ -315,7 +384,7 @@ def page(title, body, current=None, desc=""):
 <main>{body}</main>
 <footer>Every entry is also JSON (<a href="/index.json">index.json</a>, <a href="/llms.txt">llms.txt</a>,
 <a href="/feed.xml">RSS</a>). Source and review history: <a href="https://github.com/rivendale/resourcehub-net">github.com/rivendale/resourcehub-net</a>.
-Entries say what a thing is and what it found; a link is a reference, not an endorsement.</footer>
+A link is a reference, not an endorsement. <span class="disclaimer">{esc(DISCLAIMER)}</span></footer>
 </div></body></html>
 """
 
@@ -343,11 +412,29 @@ def card(e):
         start = "".join(f"<li>{link(u)}</li>" for u in e["start_here"])
         return (f'<article id="{esc(e["id"])}"><h2>{esc(e["name"])}</h2><p class="meta">{esc(e["affiliation"])} · {esc(e["focus"])}</p>'
                 f'<p>{esc(e["why"])}</p><p>{links}</p><dl><dt>Start here</dt><dd><ul>{start}</ul></dd></dl>{meta}</article>')
+    if s == "sources":
+        access = label(e["access"]) + (f' ({e["access_note"]})' if e.get("access_note") else "")
+        facts = [f'License: {esc(e["license"])}'] if e.get("license") else []
+        if "stars" in e:
+            facts.append(f'{e["stars"]:,} GitHub stars on {esc(e["counted_on"])}')
+        if "likes" in e:
+            facts.append(f'{e["likes"]:,} Hugging Face likes on {esc(e["counted_on"])}')
+        check = "link opened and read" if e["link_check"] == "ok" else f'{esc(e["link_check"])}: {esc(e.get("link_note", ""))}'
+        return (f'<article id="{esc(e["id"])}" data-subject="{esc(e["subject"])}" data-access="{esc(e["access"])}" data-kind="{esc(e["kind"])}">'
+                f'<h2>{link(e["url"], e["name"])}</h2>'
+                f'<p class="meta">{esc(label(e["subject"]))} · {esc(e["kind"])} · access: {esc(access)}</p>'
+                f'<p>{claim(e["claim"])} {esc(e["provides"])}</p>'
+                + (f'<p class="meta">{" · ".join(facts)}</p>' if facts else "")
+                + f'<p class="meta">Checked {esc(e["last_checked"])} (US Eastern): {check}</p>{meta}</article>')
     if s == "repos":
+        rel = f'{e["releases_last_year"]} release{"" if e["releases_last_year"] == 1 else "s"} in the year to review'
+        rel += f' (latest {esc(e["latest_release"])})' if e["latest_release"] else " (none published)"
         return (f'<article id="{esc(e["id"])}"><h2>{link(e["url"], e["repo"])}</h2>'
-                f'<p class="meta">{esc(e["language"])} · {esc(e["license"])} · {e["stars_at_review"]} stars at review · pushed {esc(e["pushed"])}</p>'
+                f'<p class="meta">{esc(e["language"])} · {esc(e["license"])} · {e["stars_at_review"]:,} stars at review · last commit {esc(e["last_commit"])} · '
+                f'{e["open_issues"]:,} open issues · {rel}</p>'
                 f'<p><span class="tag">Reviewed {esc(e["reviewed_on"])}</span><span class="tag">focus: {esc(e["focus"])}</span></p><p>{esc(e["what_it_is"])}</p>'
-                f'<dl><dt>Why this focus</dt><dd>{esc(e["focus_reason"])}</dd><dt>Measured against</dt><dd>{esc(e["measured_against"])}</dd></dl>{meta}</article>')
+                f'<dl><dt>Measured against</dt><dd>{esc(e["measured_against"])}</dd><dt>Why this focus</dt><dd>{esc(e["focus_reason"])}</dd>'
+                f'<dt>Does not do</dt><dd>{esc(e["does_not_do"])}</dd><dt>Tests and CI</dt><dd>{esc(e["tests_ci"])}</dd></dl>{meta}</article>')
     return (f'<article id="{esc(e["id"])}"><h2>{link(e["link"], e["title"])}</h2>'
             f'<p class="meta">{esc(e["date"])} · {esc(e["model_or_system"])} · <span class="tag">{esc(e["capability_tag"])}</span></p>'
             f'<p>{claim(e["claim"])} {esc(e["what_it_shows"])}</p>{meta}</article>')
@@ -355,8 +442,20 @@ def card(e):
 
 def summary_line(e):
     title = e.get("title") or e.get("name") or e.get("repo")
-    gist = e.get("takeaway") or e.get("why") or e.get("what_it_is") or e.get("what_it_shows")
+    gist = e.get("takeaway") or e.get("why") or e.get("what_it_is") or e.get("what_it_shows") or e.get("provides")
     return title, gist
+
+
+def source_filter(sources):
+    """Search box and subject/access selects for the sources page. Hidden until filter.js runs, so a reader without
+    JavaScript sees the full list rather than controls that do nothing."""
+    def options(field):
+        return "".join(f'<option value="{esc(v)}">{esc(label(v))}</option>' for v in sorted({e[field] for e in sources}))
+    return (f'<form id="filter" class="filter" role="search" hidden><label>Search<input type="search" name="q" autocomplete="off"></label>'
+            f'<label>Subject<select name="subject"><option value="">All subjects</option>{options("subject")}</select></label>'
+            f'<label>Access<select name="access"><option value="">Any access</option>{options("access")}</select></label></form>'
+            f'<p id="shown" aria-live="polite">{len(sources)} sources</p><p class="meta">Listed alphabetically within each subject; '
+            f'the order is not a ranking.</p><script src="/filter.js" defer></script>')
 
 
 def fault(point):
@@ -382,23 +481,27 @@ def render(entries, schemas, out):
     write(f"{out}/style.css", CSS)
     write(f"{out}/.nojekyll", "")
     write(f"{out}/robots.txt", "User-agent: *\nAllow: /\n")
+    write(f"{out}/filter.js", FILTER_JS)
     blocks = "".join(f'<article><h2><a href="/{s}/">{esc(t)}</a></h2><p>{esc(d)}</p><p class="meta">{len(entries[s])} entr{"y" if len(entries[s]) == 1 else "ies"}</p></article>'
                      for s, t, d in SECTIONS)
-    write(f"{out}/index.html", page("resourcehub.net", f'<h1>Research worth reading</h1><p class="lede">A public index of papers, '
-          f'people, open-source repositories and demos, each entry reviewed before it is published and available as JSON.</p>'
-          f'<div class="sections">{blocks}</div>', desc="A public, reviewed index of research papers, people, repos and demos."))
+    write(f"{out}/index.html", page("resourcehub.net", f'<h1>Resources, data and research</h1><p class="lede">A public directory of '
+          f'data sources, research papers, people, open-source repository reviews and demos, each entry reviewed before it is published '
+          f'and available as JSON.</p><div class="sections">{blocks}</div>',
+          desc="A public, reviewed directory of data sources, research papers, people, repo reviews and demos."))
     for s, t, d in SECTIONS:
         body = "".join(card(e) for e in entries[s]) or '<p class="lede">No entries yet.</p>'
+        if s == "sources" and entries[s]:
+            body = source_filter(entries[s]) + body
         write(f"{out}/{s}/index.html", page(f"{t} · resourcehub.net", f"<h1>{esc(t)}</h1><p class=\"lede\">{esc(d)}</p>{body}", s, d))
         for e in entries[s]:
             write(f"{out}/entries/{s}/{e['id']}.json", json.dumps(e, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
         write(f"{out}/schemas/{s}.schema.json", json.dumps(schemas[s], indent=2, sort_keys=True) + "\n")
-    write(f"{out}/index.json", json.dumps({"site": SITE, "updated": stamp, "count": len(every),
+    write(f"{out}/index.json", json.dumps({"site": SITE, "disclaimer": DISCLAIMER, "updated": stamp, "count": len(every),
           "entries": [{"id": e["id"], "section": e["section"], "added": e["added"], "title": summary_line(e)[0],
                        "json": f"{SITE}/entries/{e['section']}/{e['id']}.json"} for e in every]},
           indent=2, ensure_ascii=False) + "\n")
-    llms = [f"# resourcehub.net\n\n> A public, reviewed index of research papers, people to follow, open-source repo reviews "
-            f"and AI demos. Every entry is JSON; schemas at {SITE}/schemas/<section>.schema.json.\n"]
+    llms = [f"# resourcehub.net\n\n> A public, reviewed directory of data sources, research papers, people to follow, open-source "
+            f"repo reviews and AI demos. Every entry is JSON; schemas at {SITE}/schemas/<section>.schema.json.\n\n{DISCLAIMER}\n"]
     full = list(llms)
     for s, t, d in SECTIONS:
         llms.append(f"\n## {t}\n\n")
@@ -417,7 +520,7 @@ def render(entries, schemas, out):
         items.append(f"<item><title>{esc(title)}</title><link>{esc(url)}</link><guid isPermaLink=\"false\">{esc(SITE)}/entries/"
                      f"{esc(e['section'])}/{esc(e['id'])}.json</guid><pubDate>{when}</pubDate><description>{esc(gist)}</description></item>")
     write(f"{out}/feed.xml", '<?xml version="1.0" encoding="utf-8"?>\n<rss version="2.0"><channel><title>resourcehub.net</title>'
-          f"<link>{SITE}/</link><description>Reviewed research papers, people, repos and demos.</description>"
+          f"<link>{SITE}/</link><description>Reviewed data sources, research papers, people, repos and demos. {esc(DISCLAIMER)}</description>"
           + "".join(items) + "</channel></rss>\n")
 
 

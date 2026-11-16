@@ -8,6 +8,7 @@ import atexit
 import copy
 import ctypes
 import json
+import re
 import os
 import shutil
 import subprocess
@@ -35,7 +36,14 @@ BASE = {
               "url": "https://github.com/example/tool", "license": "MIT", "language": "Python", "stars_at_review": 120,
               "pushed": "2026-10-01", "what_it_is": "A small CLI.", "reviewed": True, "focus": "low",
               "focus_reason": "Duplicates a tool already in use.", "measured_against": "A stated need for X.",
-              "reviewed_on": "2026-10-27"},
+              "reviewed_on": "2026-10-27", "last_commit": "2026-09-30", "releases_last_year": 3,
+              "latest_release": "v1.2.0 (2026-09-01)", "open_issues": 4, "tests_ci": "tests/ directory; CI runs them on each push.",
+              "does_not_do": "Does not store credentials or call a hosted service."},
+    "sources": {"id": "fred-api", "section": "sources", "added": "2026-10-29", "reviewed_by": "laptop",
+                "sources": ["https://fred.stlouisfed.org/docs/api/fred/"], "agent_written": True, "name": "FRED API",
+                "url": "https://fred.stlouisfed.org/docs/api/fred/", "subject": "macro-and-markets", "kind": "api",
+                "provides": "Economic time series from the St. Louis Fed.", "access": "free-with-key",
+                "last_checked": "2026-10-29", "link_check": "ok", "claim": "verified"},
     "demos": {"id": "demo-one", "section": "demos", "added": "2026-10-26", "reviewed_by": "laptop",
               "sources": ["https://www.youtube.com/watch?v=abc123"], "agent_written": False, "date": "2026-10-20",
               "title": "A demo", "link": "https://www.youtube.com/watch?v=abc123", "what_it_shows": "A capability.",
@@ -58,9 +66,12 @@ def exchange_supported():
     return fn(-100, os.fsencode(a), -100, os.fsencode(b), 2) == 0
 
 
-def write_tree(entries, raw=None, sections=("papers", "people", "repos", "demos")):
+SECTIONS = ("sources", "papers", "people", "repos", "demos")
+
+
+def write_tree(entries, raw=None, sections=SECTIONS):
     d = tempfile.mkdtemp(prefix="rh-entries-", dir=TMP)
-    for s_ in sections:   # the real tree always has all four (each with .gitkeep)
+    for s_ in sections:   # the real tree always has every section (each with .gitkeep)
         os.makedirs(os.path.join(d, s_), exist_ok=True)
     for e in entries:
         os.makedirs(os.path.join(d, e["section"]), exist_ok=True)
@@ -229,7 +240,7 @@ expect_fail("impossible-month", mutate("papers", date="2026-13"), "date")
 expect_fail("fragment-token", mutate("papers", link="https://app.example.com/#access_token=abc"), "access_token")
 p, _ = build(write_tree(mutate("papers", takeaway="https://arxiv.org/abs/2608.14426 argues takeoff is slower.")))
 check("prose-starting-with-url-ok", p.returncode == 0, p.stderr.strip()[:200])
-d = write_tree([e for e in all_valid() if e["section"] != "papers"], sections=("people", "repos", "demos"))
+d = write_tree([e for e in all_valid() if e["section"] != "papers"], sections=("sources", "people", "repos", "demos"))
 open(os.path.join(d, "papers"), "w").write("not a directory")
 p, _ = build(d); check("section-is-a-file", refused(p, "is not a directory"), p.stderr.strip()[:160])
 p, out = build(write_tree(all_valid()), umask=0o077)
@@ -276,11 +287,58 @@ try:
              for h in _re.findall(r'(?:href|src)="([^"]*)"', open(os.path.join(r, f)).read())]
     bad = [h for h in hrefs if not (h.startswith("/") or h.startswith("https://") or h.startswith("#"))]
     check("root-relative", hrefs and not bad and any(h.startswith("/") for h in hrefs), str(bad[:5]))
-    for s in ("papers", "people", "repos", "demos"):
+    for s in SECTIONS:
         sch = json.load(open(f"{out}/schemas/{s}.schema.json"))
         check(f"merged-schema:{s}", "id" in sch["properties"] and "added" in sch["required"])
+    # F52: the data-only disclaimer is on every page and in every machine-readable index
+    disclaimer = "Data only"
+    pages = [os.path.join(r, f) for r, _, fs in os.walk(out) for f in fs if f.endswith(".html")]
+    check("disclaimer-every-page", pages and all(disclaimer in read(p_) for p_ in pages),
+          str([p_ for p_ in pages if disclaimer not in read(p_)][:3]))
+    check("disclaimer-index-json", disclaimer in idx.get("disclaimer", ""), str(idx.get("disclaimer"))[:80])
+    check("disclaimer-llms", disclaimer in llms and disclaimer in full and disclaimer in read(f"{out}/feed.xml"))
+    # F53: the sources page filters by subject and access with a same-origin script only
+    src_page = read(f"{out}/sources/index.html")
+    scripts = _re.findall(r"<script\b[^>]*>", src_page)
+    check("filter-controls", 'name="subject"' in src_page and 'name="access"' in src_page and 'type="search"' in src_page
+          and 'value="macro-and-markets"' in src_page and 'value="free-with-key"' in src_page
+          and 'data-subject="macro-and-markets"' in src_page and 'data-access="free-with-key"' in src_page, src_page[:200])
+    check("no-external-script", scripts and all(_re.search(r'src="/[^/]', s_) for s_ in scripts)
+          and os.path.isfile(f"{out}/filter.js") and not _re.search(r"\son[a-z]+=", src_page), str(scripts))
 except Exception as x:  # a missing output must read as a failure, not crash the run
     check("good-build:outputs", False, repr(x)[:200])
+
+# F46-F51, F55: sources and repo-review rules
+expect_fail("source-bad-access", mutate("sources", access="freemium"), "access")
+expect_fail("source-bad-subject", mutate("sources", subject="stocks"), "subject")
+expect_fail("source-missing-last-checked", mutate("sources", last_checked=KeyError), "last_checked")
+expect_fail("source-impossible-last-checked", mutate("sources", last_checked="2026-02-30"), "last_checked")
+expect_fail("source-future-last-checked", mutate("sources", last_checked="2026-11-30"), "future")
+expect_fail("source-stars-undated", mutate("sources", stars=184), "counted_on")
+expect_fail("source-likes-undated", mutate("sources", likes=12), "counted_on")
+expect_fail("source-blocked-unexplained", mutate("sources", link_check="bot-blocked"), "link_note")
+expect_fail("source-blocked-verified", mutate("sources", link_check="timeout", link_note="Timed out."), "claim")
+p, _ = build(write_tree(mutate("sources", stars=184, counted_on="2026-10-29", license="Apache-2.0",
+                               link_check="bot-blocked", link_note="Returns 403 to automated checks.", claim="unverified",
+                               access_note="Unofficial; read the provider's terms.")))
+check("source-optional-fields-ok", p.returncode == 0, p.stderr.strip()[:200])
+expect_fail("ranking-word-source", mutate("sources", provides="The best source for rates."), "ranking")
+expect_fail("ranking-word-repo", mutate("repos", focus_reason="A leading library for this."), "ranking")
+expect_fail("ranking-word-top", mutate("sources", access_note="Top tier needs a key."), "ranking")
+p, _ = build(write_tree(mutate("sources", provides="Laptop-friendly bulk files; bestowed by statute.")))
+check("ranking-word-substring-ok", p.returncode == 0, p.stderr.strip()[:200])
+expect_fail("repo-missing-does-not-do", mutate("repos", does_not_do=KeyError), "does_not_do")
+expect_fail("repo-impossible-last-commit", mutate("repos", last_commit="2026-02-30"), "last_commit")
+expect_fail("repo-negative-releases", mutate("repos", releases_last_year=-1), "releases_last_year")
+
+# F54: sources list alphabetically within each subject (never by date, which would read as a ranking)
+srcs = []
+for i, (subj, name) in enumerate([("tax", "b-tax"), ("macro-and-markets", "Zeta"), ("macro-and-markets", "alpha"), ("tax", "A-tax")]):
+    e = copy.deepcopy(BASE["sources"]); e.update(id=f"src-{i}", subject=subj, name=name, added=f"2026-10-{20 + i}")
+    srcs.append(e)
+p, out = build(write_tree(srcs))
+order = re.findall(r'<article id="(src-\d)"', read(f"{out}/sources/index.html"))
+check("sources-alphabetical", p.returncode == 0 and order == ["src-2", "src-1", "src-3", "src-0"], str(order))
 
 # F10
 p, out = build(write_tree([copy.deepcopy(BASE["papers"])]))

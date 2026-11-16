@@ -16,7 +16,13 @@
     "focus",
     "focus_reason",
     "measured_against",
-    "reviewed_on"
+    "reviewed_on",
+    "last_commit",
+    "releases_last_year",
+    "latest_release",
+    "open_issues",
+    "tests_ci",
+    "does_not_do"
   ],
   "properties": {
     "repo": {
@@ -75,6 +81,41 @@
     "reviewed_on": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "last_commit": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Date of the newest commit on the default branch at review."
+    },
+    "releases_last_year": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Published releases in the 365 days before reviewed_on: the release cadence."
+    },
+    "latest_release": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Newest release tag and its date, or null when the project publishes none."
+    },
+    "open_issues": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Open issues (not pull requests) at review."
+    },
+    "tests_ci": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "description": "Whether tests and CI are present, as found in the repository."
+    },
+    "does_not_do": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600,
+      "description": "What it does not do, against the stated need."
     }
   }
 }
