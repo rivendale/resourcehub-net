@@ -345,6 +345,14 @@ for name, prose in (("userinfo", "See https://user@nansen.ai/ here."), ("userinf
                     ("glued", "See https://a.example.com/x,https://nansen.ai/y here."),
                     ("upper-subdomain-dot-port", "See https://App.NANSEN.ai.:443/ here.")):
     expect_fail(f"people-search-{name}", mutate("repos", focus_reason=prose), "people by name")
+# F55c: prose ships word for word in index.json and llms.txt, so a held host is refused wherever its name appears
+for i, prose in enumerate(("see https://nansen.ai\u2019s data", "see https://nansen.ai\u2026 more", "see https://nansen.ai\u2014and",
+                           "see https://nansen.ai\u00bb", "see https://nansen.ai\u300d", "see https://nansen\u3002ai/x", "see https://nansen\uff0eai/x",
+                           "see https:/nansen.ai/x", "see https:\\\\nansen.ai/x", "see https://[::1]@nansen.ai/", "see nansen.ai/x",
+                           "see nan\u200bsen.ai", "see open\u00adcorporates.com", "see ADVISERINFO.SEC.GOV")):
+    expect_fail(f"people-search-prose-{i}", mutate("sources", provides=prose), "people by name")
+p, _ = build(write_tree(mutate("sources", provides="Nansen-style wallet labels and opencorporates data in general; nansen.aide is another name.")))
+check("people-name-without-domain-ok", p.returncode == 0, p.stderr.strip()[:200])   # a name without its domain is not the host
 # F50b: every form of "recommend" is a recommending word; a word that only contains it is not
 expect_fail("ranking-word-recommend", mutate("sources", provides="We recommend this feed."), "ranking")
 expect_fail("ranking-word-recommends", mutate("repos", focus_reason="The team recommends it."), "ranking")

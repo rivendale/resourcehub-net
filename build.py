@@ -26,6 +26,7 @@ import re
 import shutil
 import sys
 import tempfile
+import unicodedata
 import urllib.parse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -50,6 +51,21 @@ RANKING_FIELDS = {"sources": ("provides", "access_note", "link_note"),
 # use is searching people by name may not. Review applies the line; these hosts, held under it, fail the build so a
 # held source cannot come back by accident. Add a host when review holds one; remove it only on a recorded decision.
 PEOPLE_SEARCH_HOSTS = {"opencorporates.com", "opensanctions.org", "adviserinfo.sec.gov", "nansen.ai", "attomdata.com"}
+# A held host named anywhere in a string, as a domain token (subdomains included): prose ships word for word in
+# index.json and llms.txt, where an agent may follow "https:/nansen.ai" or a bare "nansen.ai" as readily as a link.
+PEOPLE_SEARCH_TOKENS = [(h, re.compile(r"(?<![a-z0-9-])" + re.escape(h) + r"(?![a-z0-9-])")) for h in sorted(PEOPLE_SEARCH_HOSTS)]
+INVISIBLE = dict.fromkeys(map(ord, "\u00ad\u200b\u200c\u200d\u2060\ufeff"))   # soft hyphen, zero-width characters
+DOTS = {ord("\u3002"): ".", ord("\uff61"): "."}   # ideographic full stops: NFKC keeps them, IDNA reads them as dots
+
+
+def people_tokens(text):
+    """Held hosts named in text after NFKC, dropping invisible characters, mapping ideographic dots and lowercasing;
+    percent-decoded too, so nan%73en.ai counts."""
+    norm = unicodedata.normalize("NFKC", text).translate(INVISIBLE).translate(DOTS).lower()
+    found = set()
+    for t in (norm, urllib.parse.unquote(norm)):
+        found.update(h for h, rx in PEOPLE_SEARCH_TOKENS if rx.search(t))
+    return found
 TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly", "tinyurl.com", "goo.gl"}
 # Query keys a published link may carry. An allow-list, because nine review rounds showed a blocklist of
 # identifying keys never converges (authToken, PHPSESSID, ck_subscriber_id, a custom-domain substack's r...).
@@ -250,6 +266,7 @@ def rule_problems(entry, where):
     # stripped of a trailing dot, so userinfo, ports and %-encoding cannot hide it.
     held = set()
     for _, text in strings(entry, where):
+        held.update(people_tokens(text))
         for run in re.findall(r"[a-z][a-z0-9+.-]*://[^\s\"'<>)\]}]+", text, re.I):
             for piece in re.split(r"(?<![a-z0-9+.-])(?=[a-z][a-z0-9+.-]*://)", run, flags=re.I):
                 try:
