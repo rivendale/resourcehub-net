@@ -53,19 +53,28 @@ RANKING_FIELDS = {"sources": ("provides", "access_note", "link_note"),
 PEOPLE_SEARCH_HOSTS = {"opencorporates.com", "opensanctions.org", "adviserinfo.sec.gov", "nansen.ai", "attomdata.com"}
 # A held host named anywhere in a string, as a domain token (subdomains included): prose ships word for word in
 # index.json and llms.txt, where an agent may follow "https:/nansen.ai" or a bare "nansen.ai" as readily as a link.
-PEOPLE_SEARCH_TOKENS = [(h, re.compile(r"(?<![a-z0-9-])" + re.escape(h) + r"(?![a-z0-9-])")) for h in sorted(PEOPLE_SEARCH_HOSTS)]
-INVISIBLE = dict.fromkeys(map(ord, "\u00ad\u200b\u200c\u200d\u2060\ufeff"))   # soft hyphen, zero-width characters
-DOTS = {ord("\u3002"): ".", ord("\uff61"): "."}   # ideographic full stops: NFKC keeps them, IDNA reads them as dots
+# Left edge: not inside a longer label or identifier. Right edge: not continuing into another label (".example"),
+# a local part ("@") or an identifier ("_"); a sentence-ending dot or a port still counts.
+PEOPLE_SEARCH_TOKENS = [(h, re.compile(r"(?<![a-z0-9_-])" + re.escape(h) + r"(?![a-z0-9_-]|\.[a-z0-9_-]|@)"))
+                        for h in sorted(PEOPLE_SEARCH_HOSTS)]
+DOTS = {ord("。"): "."}   # the ideographic full stop (NFKC also maps U+FF61 to it): IDNA reads it as a dot
+DEFANGED = re.compile(r"[\[(]\.[\])]")   # "nansen[.]ai", "nansen(.)ai": the common defanged spelling
 
 
 def people_tokens(text):
-    """Held hosts named in text after NFKC, dropping invisible characters, mapping ideographic dots and lowercasing;
-    percent-decoded too, so nan%73en.ai counts."""
-    norm = unicodedata.normalize("NFKC", text).translate(INVISIBLE).translate(DOTS).lower()
-    found = set()
-    for t in (norm, urllib.parse.unquote(norm)):
-        found.update(h for h, rx in PEOPLE_SEARCH_TOKENS if rx.search(t))
-    return found
+    """Held hosts named in text. Decode first, until stable (HTML entities, then percent-encoding; bounded), so a
+    decoded character is normalised too; then NFKC, drop every format (Cf), combining (Mn, Me) character, which
+    includes zero-width characters, soft hyphens, joiners and variation selectors; map dot look-alikes; lowercase."""
+    t = text
+    for _ in range(3):
+        decoded = urllib.parse.unquote(html.unescape(t))
+        if decoded == t:
+            break
+        t = decoded
+    t = unicodedata.normalize("NFKC", t)
+    t = "".join(c for c in t if unicodedata.category(c) not in ("Cf", "Mn", "Me")).translate(DOTS)
+    t = DEFANGED.sub(".", t).lower()
+    return {h for h, rx in PEOPLE_SEARCH_TOKENS if rx.search(t)}
 TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly", "tinyurl.com", "goo.gl"}
 # Query keys a published link may carry. An allow-list, because nine review rounds showed a blocklist of
 # identifying keys never converges (authToken, PHPSESSID, ck_subscriber_id, a custom-domain substack's r...).

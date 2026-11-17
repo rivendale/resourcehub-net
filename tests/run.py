@@ -351,6 +351,20 @@ for i, prose in enumerate(("see https://nansen.ai\u2019s data", "see https://nan
                            "see https:/nansen.ai/x", "see https:\\\\nansen.ai/x", "see https://[::1]@nansen.ai/", "see nansen.ai/x",
                            "see nan\u200bsen.ai", "see open\u00adcorporates.com", "see ADVISERINFO.SEC.GOV")):
     expect_fail(f"people-search-prose-{i}", mutate("sources", provides=prose), "people by name")
+# F55d: decoding runs before normalising, so an encoded character is normalised too; every format, combining and
+# variation-selector character is dropped; a held name followed by another label, an @ or an underscore is not the host
+for name, prose in (("pct-capital", "see %4eansen.ai"), ("pct-fullwidth-dot", "see nansen%ef%bc%8eai"),
+                    ("pct-ideographic-dot", "see nansen%e3%80%82ai"), ("pct-zero-width", "see nan%e2%80%8bsen.ai"),
+                    ("pct-soft-hyphen", "see open%c2%adcorporates.com"), ("double-pct", "see nansen%252eai"),
+                    ("entity-decimal", "see nansen&#46;ai"), ("entity-named", "see nansen&period;ai"), ("entity-hex", "see nansen&#x2e;ai"),
+                    ("cgj", "see nan͏sen.ai"), ("vs16", "see nan️sen.ai"), ("mongolian-fvs", "see nan᠋sen.ai"),
+                    ("lrm", "see nan‎sen.ai"), ("invisible-plus", "see nansen⁤.ai"), ("vs-supplement", "see nansen\U000e0100.ai"),
+                    ("defanged", "see nansen[.]ai"), ("sentence-end", "Labels come from nansen.ai."), ("subdomain", "see app.nansen.ai/x")):
+    expect_fail(f"people-search-{name}", mutate("sources", provides=prose), "people by name")
+for name, prose in (("other-domain", "see nansen.ai.example.org"), ("email-local-part", "write to nansen.ai@example.org"),
+                    ("underscore", "a variable not_nansen.ai or nansen.ai_old")):
+    p, _ = build(write_tree(mutate("sources", provides=prose)))
+    check(f"people-not-held-{name}", p.returncode == 0, p.stderr.strip()[:200])
 p, _ = build(write_tree(mutate("sources", provides="Nansen-style wallet labels and opencorporates data in general; nansen.aide is another name.")))
 check("people-name-without-domain-ok", p.returncode == 0, p.stderr.strip()[:200])   # a name without its domain is not the host
 # F50b: every form of "recommend" is a recommending word; a word that only contains it is not
