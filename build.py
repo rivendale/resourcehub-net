@@ -26,6 +26,7 @@ import re
 import shutil
 import sys
 import tempfile
+import unicodedata
 import urllib.parse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -43,13 +44,37 @@ DISCLAIMER = ("Data only. Entries describe what a source or project is, how to r
               "investment, tax or legal advice, a recommendation or a ranking. Read each provider's own terms: access rules "
               "and licences change.")
 # Listing language stays neutral: these words rank or recommend, so the build refuses them in our own prose.
-RANKING = re.compile(r"\b(best|leading|top|number one|recommended|must-have|world-class|premier)\b", re.I)
+RANKING = re.compile(r"\b(best|leading|top|number one|recommend(?:s|ed|ing|ations?)?|must-have|world-class|premier)\b", re.I)
 RANKING_FIELDS = {"sources": ("provides", "access_note", "link_note"),
                   "repos": ("what_it_is", "focus_reason", "measured_against", "tests_ci", "does_not_do")}
 # The people line: official government designation lists (sanctions, exclusions) may be listed; a source whose main
 # use is searching people by name may not. Review applies the line; these hosts, held under it, fail the build so a
 # held source cannot come back by accident. Add a host when review holds one; remove it only on a recorded decision.
 PEOPLE_SEARCH_HOSTS = {"opencorporates.com", "opensanctions.org", "adviserinfo.sec.gov", "nansen.ai", "attomdata.com"}
+# A held host named anywhere in a string, as a domain token (subdomains included): prose ships word for word in
+# index.json and llms.txt, where an agent may follow "https:/nansen.ai" or a bare "nansen.ai" as readily as a link.
+# Left edge: not inside a longer label or identifier. Right edge: not continuing into another label (".example"),
+# a local part ("@") or an identifier ("_"); a sentence-ending dot or a port still counts.
+PEOPLE_SEARCH_TOKENS = [(h, re.compile(r"(?<![a-z0-9_-])" + re.escape(h) + r"(?![a-z0-9_-]|\.[a-z0-9_-]|@)"))
+                        for h in sorted(PEOPLE_SEARCH_HOSTS)]
+DOTS = {ord("。"): "."}   # the ideographic full stop (NFKC also maps U+FF61 to it): IDNA reads it as a dot
+DEFANGED = re.compile(r"[\[(]\.[\])]")   # "nansen[.]ai", "nansen(.)ai": the common defanged spelling
+
+
+def people_tokens(text):
+    """Held hosts named in text. Decode first, until stable (HTML entities, then percent-encoding; bounded), so a
+    decoded character is normalised too; then NFKC, drop every format (Cf), combining (Mn, Me) character, which
+    includes zero-width characters, soft hyphens, joiners and variation selectors; map dot look-alikes; lowercase."""
+    t = text
+    for _ in range(3):
+        decoded = urllib.parse.unquote(html.unescape(t))
+        if decoded == t:
+            break
+        t = decoded
+    t = unicodedata.normalize("NFKC", t)
+    t = "".join(c for c in t if unicodedata.category(c) not in ("Cf", "Mn", "Me")).translate(DOTS)
+    t = DEFANGED.sub(".", t).lower()
+    return {h for h, rx in PEOPLE_SEARCH_TOKENS if rx.search(t)}
 TRACKER_HOSTS = {"t.co", "bit.ly", "share.google", "lnkd.in", "buff.ly", "ow.ly", "tinyurl.com", "goo.gl"}
 # Query keys a published link may carry. An allow-list, because nine review rounds showed a blocklist of
 # identifying keys never converges (authToken, PHPSESSID, ck_subscriber_id, a custom-domain substack's r...).
@@ -244,14 +269,28 @@ def rule_problems(entry, where):
         m = RANKING.search(entry.get(k) or "") if isinstance(entry.get(k), str) else None
         if m:
             errs.append(f"{where}.{k}: ranking or recommending word {m.group(0)!r}; describe, do not rank")
+    # The people line reads every URL in every field of every section: a link, a paper's code, a person's links,
+    # or a URL inside prose. Each scheme:// run (to whitespace, a closing bracket or a quote) is split where another
+    # scheme:// starts, stripped of sentence punctuation and parsed; the host is percent-decoded, lowercased and
+    # stripped of a trailing dot, so userinfo, ports and %-encoding cannot hide it.
+    held = set()
+    for _, text in strings(entry, where):
+        held.update(people_tokens(text))
+        for run in re.findall(r"[a-z][a-z0-9+.-]*://[^\s\"'<>)\]}]+", text, re.I):
+            for piece in re.split(r"(?<![a-z0-9+.-])(?=[a-z][a-z0-9+.-]*://)", run, flags=re.I):
+                try:
+                    host = urllib.parse.urlsplit(piece.rstrip(TRAILING)).hostname or ""
+                except ValueError:   # a malformed port or bracket; link_problems() reports the URL itself
+                    host = ""
+                host = urllib.parse.unquote(host).lower().rstrip(".")
+                if host and any(host == h or host.endswith("." + h) for h in PEOPLE_SEARCH_HOSTS):
+                    held.add(host)
+    for host in sorted(held):
+        errs.append(f"{where}: {host} is held: its main use is searching people by name (PEOPLE_SEARCH_HOSTS)")
     if entry.get("section") == "repos" and isinstance(entry.get("releases_last_year"), int) \
             and entry["releases_last_year"] > 0 and not entry.get("latest_release"):
         errs.append(f"{where}.latest_release: {entry['releases_last_year']} releases in the year but no latest release named")
     if entry.get("section") == "sources":
-        for u in [entry.get("url")] + list(entry.get("sources") or []):
-            host = urllib.parse.urlsplit(u).hostname or "" if isinstance(u, str) else ""
-            if any(host == h or host.endswith("." + h) for h in PEOPLE_SEARCH_HOSTS):
-                errs.append(f"{where}: {host} is held: its main use is searching people by name (PEOPLE_SEARCH_HOSTS)")
         if ("stars" in entry or "likes" in entry) and "counted_on" not in entry:
             errs.append(f"{where}: stars or likes need counted_on, the date they were counted")
         if entry.get("link_check") in ("bot-blocked", "timeout"):

@@ -332,6 +332,48 @@ for host_url in ("https://opencorporates.com/", "https://www.opensanctions.org/s
 p, _ = build(write_tree(mutate("sources", url="https://ofac.treasury.gov/sanctions-list-service", subject="sanctions-and-kyc",
                                sources=["https://ofac.treasury.gov/sanctions-list-service"])))
 check("designation-list-ok", p.returncode == 0, p.stderr.strip()[:200])
+# F55b: the people guard reads every URL in every section, not only a source's url and sources
+expect_fail("people-search-paper-link", mutate("papers", link="https://opencorporates.com/officers/x"), "people by name")
+expect_fail("people-search-paper-code", mutate("papers", code="https://www.opensanctions.org/datasets/"), "people by name")
+expect_fail("people-search-people-link", mutate("people", links={"site": "https://adviserinfo.sec.gov/"}), "people by name")
+expect_fail("people-search-prose-url", mutate("repos", focus_reason="Compare https://nansen.ai/ labels."), "people by name")
+for i, prose in enumerate(("See https://nansen.ai, which labels wallets.", "Compare (https://nansen.ai).", "Read https://opencorporates.com; then stop.")):
+    expect_fail(f"people-search-punctuated-{i}", mutate("repos", focus_reason=prose), "people by name")
+# the guard names the held host itself, even where the link rules also refuse the URL (userinfo, percent-encoded host)
+for name, prose in (("userinfo", "See https://user@nansen.ai/ here."), ("userinfo-password", "See https://user:pw@opencorporates.com/ here."),
+                    ("pct-dot", "See https://nansen%2eai/ here."), ("pct-letter", "See https://%6eansen.ai/ here."),
+                    ("glued", "See https://a.example.com/x,https://nansen.ai/y here."),
+                    ("upper-subdomain-dot-port", "See https://App.NANSEN.ai.:443/ here.")):
+    expect_fail(f"people-search-{name}", mutate("repos", focus_reason=prose), "people by name")
+# F55c: prose ships word for word in index.json and llms.txt, so a held host is refused wherever its name appears
+for i, prose in enumerate(("see https://nansen.ai\u2019s data", "see https://nansen.ai\u2026 more", "see https://nansen.ai\u2014and",
+                           "see https://nansen.ai\u00bb", "see https://nansen.ai\u300d", "see https://nansen\u3002ai/x", "see https://nansen\uff0eai/x",
+                           "see https:/nansen.ai/x", "see https:\\\\nansen.ai/x", "see https://[::1]@nansen.ai/", "see nansen.ai/x",
+                           "see nan\u200bsen.ai", "see open\u00adcorporates.com", "see ADVISERINFO.SEC.GOV")):
+    expect_fail(f"people-search-prose-{i}", mutate("sources", provides=prose), "people by name")
+# F55d: decoding runs before normalising, so an encoded character is normalised too; every format, combining and
+# variation-selector character is dropped; a held name followed by another label, an @ or an underscore is not the host
+for name, prose in (("pct-capital", "see %4eansen.ai"), ("pct-fullwidth-dot", "see nansen%ef%bc%8eai"),
+                    ("pct-ideographic-dot", "see nansen%e3%80%82ai"), ("pct-zero-width", "see nan%e2%80%8bsen.ai"),
+                    ("pct-soft-hyphen", "see open%c2%adcorporates.com"), ("double-pct", "see nansen%252eai"),
+                    ("entity-decimal", "see nansen&#46;ai"), ("entity-named", "see nansen&period;ai"), ("entity-hex", "see nansen&#x2e;ai"),
+                    ("cgj", "see nan͏sen.ai"), ("vs16", "see nan️sen.ai"), ("mongolian-fvs", "see nan᠋sen.ai"),
+                    ("lrm", "see nan‎sen.ai"), ("invisible-plus", "see nansen⁤.ai"), ("vs-supplement", "see nansen\U000e0100.ai"),
+                    ("defanged", "see nansen[.]ai"), ("sentence-end", "Labels come from nansen.ai."), ("subdomain", "see app.nansen.ai/x")):
+    expect_fail(f"people-search-{name}", mutate("sources", provides=prose), "people by name")
+for name, prose in (("other-domain", "see nansen.ai.example.org"), ("email-local-part", "write to nansen.ai@example.org"),
+                    ("underscore", "a variable not_nansen.ai or nansen.ai_old")):
+    p, _ = build(write_tree(mutate("sources", provides=prose)))
+    check(f"people-not-held-{name}", p.returncode == 0, p.stderr.strip()[:200])
+p, _ = build(write_tree(mutate("sources", provides="Nansen-style wallet labels and opencorporates data in general; nansen.aide is another name.")))
+check("people-name-without-domain-ok", p.returncode == 0, p.stderr.strip()[:200])   # a name without its domain is not the host
+# F50b: every form of "recommend" is a recommending word; a word that only contains it is not
+expect_fail("ranking-word-recommend", mutate("sources", provides="We recommend this feed."), "ranking")
+expect_fail("ranking-word-recommends", mutate("repos", focus_reason="The team recommends it."), "ranking")
+expect_fail("ranking-word-recommendation", mutate("sources", access_note="Our recommendation: a key."), "ranking")
+expect_fail("ranking-word-recommending", mutate("repos", does_not_do="Recommending tickers."), "ranking")
+p, _ = build(write_tree(mutate("sources", provides="Training data for a recommender system.")))
+check("ranking-word-recommender-ok", p.returncode == 0, p.stderr.strip()[:200])   # a longer word that contains it passes
 expect_fail("ranking-word-source", mutate("sources", provides="The best source for rates."), "ranking")
 expect_fail("ranking-word-repo", mutate("repos", focus_reason="A leading library for this."), "ranking")
 expect_fail("ranking-word-top", mutate("sources", access_note="Top tier needs a key."), "ranking")
